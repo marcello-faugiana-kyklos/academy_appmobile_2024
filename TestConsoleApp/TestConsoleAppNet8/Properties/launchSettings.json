@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "TestConsoleAppNet8": {
+      "commandName": "Project",
+      "commandLineArgs": "Films.txt mondo come stai?"
+    }
+  }
+}
