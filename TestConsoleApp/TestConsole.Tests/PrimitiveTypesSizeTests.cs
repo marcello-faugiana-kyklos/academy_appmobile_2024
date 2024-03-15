@@ -61,6 +61,7 @@ public class PrimitiveTypesSizeTests
     [Fact]
     public void String_are_immutable_objects()
     {
+        // comment 1
         const string s = "Hello World!";
 
         s = "New world";
