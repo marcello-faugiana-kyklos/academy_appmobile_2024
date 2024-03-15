@@ -1,4 +1,8 @@
-﻿if (args.Length == 0)
+﻿using TestConsoleAppNet8;
+
+
+
+if (args.Length == 0)
 {
     Console.WriteLine("Please specify a file name!");
     Environment.Exit(1);
