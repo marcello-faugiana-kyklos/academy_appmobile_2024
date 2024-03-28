@@ -69,4 +69,20 @@ public class Point2DTests
         p1.Equals(p3);
     }
 
+    [Fact]
+    public void TestDateTime() 
+    { 
+        DateTime dt1 = new DateTime(2025, 1, 1);
+        DateTime dt2 = new DateTime(2026, 1, 1);
+
+        double days = (dt2 - dt1).TotalDays;
+
+        //var nextYear = dt.AddYears(1);
+
+        //nextYear.Year.Should().Be(2025);
+        //nextYear.Month.Should().Be(3);
+        //nextYear.Day.Should().Be(1);
+
+    }
+
 }

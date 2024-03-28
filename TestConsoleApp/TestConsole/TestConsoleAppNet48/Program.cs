@@ -12,5 +12,10 @@ namespace TestConsoleAppNet48
         {
             return 0;
         }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
     }
 }

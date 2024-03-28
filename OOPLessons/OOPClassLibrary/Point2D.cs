@@ -4,15 +4,44 @@
 // public:    visibilità dappertutto
 // internal:  visibilità limitata all'interno dello stesso assembly
 // private:   visibilità limitata al tipo nel quale è definito l'elemento
+// protected: visibilità limitata alle sottoclassi, anche in assembly diversi
+
+
+/*
+             A
+            ^ ^  ^
+           B   D  E
+          ^   
+          C
+         ^
+         F
+
+                 A
+               /   \
+              B     C
+               \   /  \
+                 D     F
+                  \   /
+                    E
+
+
+    C <: A
+
+    F <: C
+
+    F <: A
+
+    X <: X
+
+*/
 
 public class Point2D    //: IEquatable<Point2D>
 {
-    private class Point2DZero : Point2D
+    private class Point2DZero : Point2D 
     {
-
         public override double X 
         { 
-            get => base.X; 
+            get => _x; 
             set 
             { 
                 throw new InvalidOperationException("X cannot be set for Origin");
@@ -41,7 +70,7 @@ public class Point2D    //: IEquatable<Point2D>
 
     #region X and Y
 
-    private double _x;
+    protected double _x;
     private double _y;
 
     public virtual double X
@@ -97,28 +126,24 @@ public class Point2D    //: IEquatable<Point2D>
         return Math.Sqrt(dX + dY);
     }
 
-    public override int GetHashCode()
-    {
-        return base.GetHashCode();
-    }
+    //public override int GetHashCode()
+    //{
+    //    /*
+    //        a   b |  a & b  | a | b | a ^ x
+    //        0   0 |    0    |   0   |   0
+    //        0   1 |    0    |   1   |   1
+    //        1   0 |    0    |   1   |   1
+    //        1   1 |    1    |   1   |   0
+           
+
+    //    */
+    //    return (17 * _x.GetHashCode()) ^ (17 * _y.GetHashCode());
+    //}
+
+
 
     public override bool Equals(object? obj) =>
         Equals(obj as Point2D);
-    //{
-    //    Point2D? other = obj as Point2D;
-
-    //    if (other is null)
-    //    {
-    //        return false;
-    //    }
-
-    //    if (ReferenceEquals(this, other))
-    //    {
-    //        return true;
-    //    }
-
-    //    return X == other.X && Y == other.Y;
-    //}
 
     public bool Equals(Point2D? other) 
     {
@@ -136,4 +161,7 @@ public class Point2D    //: IEquatable<Point2D>
             X == other.X
             && Y == other.Y;
     }
+
+    public override int GetHashCode() =>
+        HashCode.Combine(X, Y);
 }
