@@ -1,4 +1,4 @@
-﻿namespace OOPClassLibrary;
+﻿namespace OOPClassLibrary.Geometry;
 
 
 // public:    visibilità dappertutto
@@ -37,13 +37,13 @@
 
 public class Point2D    //: IEquatable<Point2D>
 {
-    private class Point2DZero : Point2D 
+    private class Point2DZero : Point2D
     {
-        public override double X 
-        { 
-            get => _x; 
-            set 
-            { 
+        public override double X
+        {
+            get => _x;
+            set
+            {
                 throw new InvalidOperationException("X cannot be set for Origin");
             }
         }
@@ -51,7 +51,7 @@ public class Point2D    //: IEquatable<Point2D>
         public override double Y
         {
             get => base.Y;
-            set 
+            set
             {
                 throw new InvalidOperationException("Y cannot be set for Origin");
             }
@@ -97,7 +97,7 @@ public class Point2D    //: IEquatable<Point2D>
 
     public Point2D(double x, double y)
     {
-        _x = x; 
+        _x = x;
         _y = y;
     }
 
@@ -105,8 +105,8 @@ public class Point2D    //: IEquatable<Point2D>
     {
     }
 
-    public Point2D() : this(0d, 0d) 
-    { 
+    public Point2D() : this(0d, 0d)
+    {
     }
 
     #endregion
@@ -134,7 +134,7 @@ public class Point2D    //: IEquatable<Point2D>
     //        0   1 |    0    |   1   |   1
     //        1   0 |    0    |   1   |   1
     //        1   1 |    1    |   1   |   0
-           
+
 
     //    */
     //    return (17 * _x.GetHashCode()) ^ (17 * _y.GetHashCode());
@@ -145,7 +145,7 @@ public class Point2D    //: IEquatable<Point2D>
     public override bool Equals(object? obj) =>
         Equals(obj as Point2D);
 
-    public bool Equals(Point2D? other) 
+    public bool Equals(Point2D? other)
     {
         if (other is null)
         {

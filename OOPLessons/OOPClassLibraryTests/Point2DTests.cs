@@ -1,5 +1,5 @@
 using FluentAssertions;
-using OOPClassLibrary;
+using OOPClassLibrary.Geometry;
 
 namespace OOPClassLibraryTests;
 
