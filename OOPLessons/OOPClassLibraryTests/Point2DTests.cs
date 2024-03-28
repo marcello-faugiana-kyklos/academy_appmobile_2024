@@ -18,6 +18,7 @@ public class Point2DTests
 
         p1.DistanceFromOrigin().Should().Be(5d);
 
+
         Point2D.Origin.X = 10;
         Point2D.Origin.Y = 100;
 
@@ -28,7 +29,7 @@ public class Point2DTests
         Point2D p2 = new Point2D(1, 1);
         Point2D p3 = new Point2D(4, 5);
 
-        p2.DistanceFromToOtherPoint(p3).Should().Be(5d);
+        p2.DistanceFromOtherPoint(p3).Should().Be(5d);
 
 
         //point0_0.Y.Should().Be(0);
@@ -50,4 +51,22 @@ public class Point2DTests
             p1.DistanceFromOrigin();
         }
     }
+
+    [Fact]
+    public void TestInnerClass()
+    {
+        Point2D p1 = new Point2D(3, 3);
+                
+        object p2 = new Point2D(3);
+
+        Point2D p3 = new Point2D(3, 3);
+
+        p2.Equals(p1).Should().BeTrue();
+        p1.Equals(p2).Should().BeTrue();
+
+        p1.Equals("Sorpresa").Should().BeFalse();
+
+        p1.Equals(p3);
+    }
+
 }
