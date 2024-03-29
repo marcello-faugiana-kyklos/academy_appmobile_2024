@@ -106,4 +106,9 @@ public class Person
     private static bool IsDateOfBirthValid(DateOnly date) =>
         date <= DateOnly.FromDateTime(DateTime.Today)
         && (date >= MinValidDate);
+
+    public override string ToString()
+    {
+        return $"Hi, I'm {LastName}, {FirstName} {LastName}";
+    }
 }
