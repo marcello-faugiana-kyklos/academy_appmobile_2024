@@ -28,17 +28,53 @@ public class Person
     public string FirstName { get; }
     public string LastName { get; }
     public string PlaceOfBirth { get; }
-    public string FiscalCode { get; }
+
+    private string? _fiscalCode;
+    public string? FiscalCode 
+    {
+        get => _fiscalCode;
+        set
+        {
+            if (_fiscalCode is not null)
+            {
+                throw new Exception("Fiscal code already set");
+            }
+            _fiscalCode = SanitizeFiscalCode(value);
+        }
+    }
+    
     public DateOnly DateOfBirth { get; }
     public Gender Gender { get; }
     public MaritalStatus MaritalStatus { get; }
 
     public Person
     (
+        string firstName,
+        string lastName,
+        string placeOfBirth,
+        DateOnly dateOfBirth,
+        Gender gender,
+        MaritalStatus maritalStatus
+    ) : this
+        (
+            firstName,
+            lastName,
+            placeOfBirth,
+            null,
+            dateOfBirth,
+            gender,
+            maritalStatus
+        )
+    {
+
+    }
+
+    public Person
+    (
         string firstName, 
         string lastName, 
         string placeOfBirth, 
-        string fiscalCode, 
+        string? fiscalCode, 
         DateOnly dateOfBirth, 
         Gender gender, 
         MaritalStatus maritalStatus
@@ -47,7 +83,7 @@ public class Person
         FirstName = SanitizeName(firstName, nameof(firstName));
         LastName = SanitizeName(lastName, nameof(lastName));
         PlaceOfBirth = SanitizeName(placeOfBirth, nameof(placeOfBirth));
-        FiscalCode = fiscalCode;
+        _fiscalCode = fiscalCode is null ? null : SanitizeFiscalCode(fiscalCode);
         DateOfBirth = SanitizeDateOfBirth(dateOfBirth);
         Gender = gender;
         MaritalStatus = maritalStatus;
@@ -106,6 +142,19 @@ public class Person
     private static bool IsDateOfBirthValid(DateOnly date) =>
         date <= DateOnly.FromDateTime(DateTime.Today)
         && (date >= MinValidDate);
+
+    private static string SanitizeFiscalCode(string? fiscalCode)
+    {
+        if (fiscalCode is null)
+        {
+            throw new ArgumentNullException(nameof(fiscalCode));
+        }
+        if (fiscalCode.Length != 16)
+        {
+            throw new ArgumentException("Fiscal code must have length 16");
+        }
+        return fiscalCode;
+    }
 
     public override string ToString()
     {
