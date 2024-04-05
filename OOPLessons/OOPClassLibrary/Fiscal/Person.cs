@@ -99,7 +99,7 @@ public class Person
             throw new ArgumentNullException(paramName);
         }
 
-        string sanitizedName = name.Trim();
+        string sanitizedName = name.Trim(' ', '\'');
 
         if (sanitizedName.Length < nameMimLen)
         {
