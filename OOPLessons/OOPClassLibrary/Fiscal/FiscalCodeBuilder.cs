@@ -1,5 +1,4 @@
-﻿using System.Security.Cryptography.X509Certificates;
-using System.Text;
+﻿using System.Text;
 
 namespace OOPClassLibrary.Fiscal;
 
@@ -139,7 +138,12 @@ public class FiscalCodeBuilder
 
         fiscalCodeBuidler.Append(GetLastNamePart(person.LastName));
 
+        // missing:
+        //   first
+        //   gender and birthday
+
         fiscalCodeBuidler.Append(GetPlaceOfBirthCode(person.PlaceOfBirth));
+        fiscalCodeBuidler.Append(GetControlCode(fiscalCodeBuidler.ToString()));
 
         return fiscalCodeBuidler.ToString();
     }
