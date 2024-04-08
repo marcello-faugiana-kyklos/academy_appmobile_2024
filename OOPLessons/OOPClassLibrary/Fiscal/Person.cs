@@ -12,7 +12,6 @@ public class Person
     // Auto property in solo get. Readonly
 
 
-
     //private readonly string _lastName;
 
 

@@ -1,7 +1,7 @@
-﻿Mazara del Vallo @ F061
-Prato @ G999  
-Firenze @ D612  
-Roma @ H501  
-Torino @ L219  
-Milano @ F205  
-Giappone @ ZZ19
+﻿Mazara del Vallo | F061
+Prato | G999  
+Firenze | D612  
+Roma | H501  
+Torino | L219  
+Milano | F205  
+Giappone | ZZ19

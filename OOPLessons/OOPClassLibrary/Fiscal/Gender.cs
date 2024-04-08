@@ -8,6 +8,11 @@ public enum Gender
 
 
 
-
+public enum PlaceOfBirthMethods
+{
+    Dictionary,
+    If,
+    Database
+}
 
 

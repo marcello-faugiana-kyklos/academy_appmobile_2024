@@ -1,8 +1,9 @@
-﻿using System.Text;
+﻿using OOPClassLibrary.Support;
+using System.Text;
 
 namespace OOPClassLibrary.Fiscal;
 
-public class FiscalCodeBuilder
+public class FiscalCodeBuilderWithSwitch
 {
     private static readonly Dictionary<string, string> belfioreCodes;
     //new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
@@ -16,8 +17,12 @@ public class FiscalCodeBuilder
     //    { "Giappone", "ZZ19" }
     //};
 
-    static FiscalCodeBuilder()
+    static FiscalCodeBuilderWithSwitch()
     {
+        // 1 - Dictionary
+        // 2 - if nel codice
+        // 3 - database (?)
+
         //belfioreCodes = new Dictionary<string, string>();
         //var lines = File.ReadLines(@"./Data/BelfioreCodes.txt");
 
@@ -36,15 +41,8 @@ public class FiscalCodeBuilder
         belfioreCodes =
             File
             .ReadLines(@"./Data/BelfioreCodes.txt")
-            .Select
-            (
-                line =>
-                {
-                    var parts = line.Split('@');
-                    return (place: parts[0].Trim(), code: parts[1].Trim());
-                }
-            )
-            .ToDictionary(x => x.place, x => x.code);
+            .Select(line => line.SplitLineIntoPlaceAndCode('|'))
+            .ToDictionary(x => x.Place, x => x.Code);
     }
 
 
@@ -130,8 +128,15 @@ public class FiscalCodeBuilder
                 { 'Z', 23 }
         };
 
+    //private readonly PlaceOfBirthMethods _placeOfBirthMethods;
 
-    public string Build(Person person)
+    //public FiscalCodeBuilder(PlaceOfBirthMethods placeOfBirthMethods)
+    //{
+    //    _placeOfBirthMethods = placeOfBirthMethods;
+    //}
+
+    public string Build(Person person, PlaceOfBirthMethods placeOfBirthMethod)
+    //public string Build(Person person)
     {
         ArgumentNullException.ThrowIfNull(nameof(person));
         StringBuilder fiscalCodeBuidler = new StringBuilder();
@@ -142,7 +147,7 @@ public class FiscalCodeBuilder
         //   first
         //   gender and birthday
 
-        fiscalCodeBuidler.Append(GetPlaceOfBirthCode(person.PlaceOfBirth));
+        fiscalCodeBuidler.Append(GetPlaceOfBirthCode(person.PlaceOfBirth, placeOfBirthMethod));
         fiscalCodeBuidler.Append(GetControlCode(fiscalCodeBuidler.ToString()));
 
         return fiscalCodeBuidler.ToString();
@@ -203,7 +208,19 @@ public class FiscalCodeBuilder
         return (vow, cons);
     }
 
-    public string GetPlaceOfBirthCode(string placeOfBirth)
+    private string GetPlaceOfBirthCode
+    (
+        string placeOfBirth, 
+        PlaceOfBirthMethods placeOfBirthMethod
+    ) =>
+        placeOfBirthMethod switch
+        {
+            PlaceOfBirthMethods.Dictionary => GetPlaceOfBirthCodeByDictionary(placeOfBirth),
+            PlaceOfBirthMethods.If => GetPlaceOfBirthCodeByIf(placeOfBirth),
+            _ => throw new NotImplementedException($"Method {PlaceOfBirthMethods.Database} not implemented")
+        };
+
+    private string GetPlaceOfBirthCodeByDictionary(string placeOfBirth)
     {
         if (belfioreCodes.TryGetValue(placeOfBirth, out string? code))
         {
@@ -211,7 +228,20 @@ public class FiscalCodeBuilder
         }
 
         throw new Exception($"'{placeOfBirth}' not found in database");
+    }
 
+    private string GetPlaceOfBirthCodeByIf(string placeOfBirth)
+    {
+        if (string.Equals(placeOfBirth, "Mazara Del Vallo", StringComparison.CurrentCultureIgnoreCase))
+        {
+            return "F061";
+        }
+
+        if (string.Equals(placeOfBirth, "Prato", StringComparison.CurrentCultureIgnoreCase))
+        {
+            return "G999";
+        }
+        throw new Exception($"'{placeOfBirth}' not found in database");
     }
 
     public string GetControlCode(string partialFiscalCode)

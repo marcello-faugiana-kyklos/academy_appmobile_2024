@@ -40,6 +40,9 @@
             cmbGender = new ComboBox();
             lblGender = new Label();
             lstPeople = new ListBox();
+            cmbPlaceOfBirthMethod = new ComboBox();
+            lblPlaceOfBirthMethod = new Label();
+            btnBuildFiscalCode = new Button();
             SuspendLayout();
             // 
             // lblFirstNAme
@@ -144,11 +147,43 @@
             lstPeople.Size = new Size(727, 264);
             lstPeople.TabIndex = 11;
             // 
+            // cmbPlaceOfBirthMethod
+            // 
+            cmbPlaceOfBirthMethod.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbPlaceOfBirthMethod.FormattingEnabled = true;
+            cmbPlaceOfBirthMethod.Location = new Point(571, 166);
+            cmbPlaceOfBirthMethod.Name = "cmbPlaceOfBirthMethod";
+            cmbPlaceOfBirthMethod.Size = new Size(181, 28);
+            cmbPlaceOfBirthMethod.TabIndex = 12;
+            // 
+            // lblPlaceOfBirthMethod
+            // 
+            lblPlaceOfBirthMethod.AutoSize = true;
+            lblPlaceOfBirthMethod.Location = new Point(412, 169);
+            lblPlaceOfBirthMethod.Name = "lblPlaceOfBirthMethod";
+            lblPlaceOfBirthMethod.Size = new Size(153, 20);
+            lblPlaceOfBirthMethod.TabIndex = 13;
+            lblPlaceOfBirthMethod.Text = "Place of birth method";
+            // 
+            // btnBuildFiscalCode
+            // 
+            btnBuildFiscalCode.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnBuildFiscalCode.Location = new Point(40, 581);
+            btnBuildFiscalCode.Name = "btnBuildFiscalCode";
+            btnBuildFiscalCode.Size = new Size(94, 59);
+            btnBuildFiscalCode.TabIndex = 14;
+            btnBuildFiscalCode.Text = "Build Fiscal Code";
+            btnBuildFiscalCode.UseVisualStyleBackColor = true;
+            btnBuildFiscalCode.Click += btnBuildFiscalCode_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 664);
+            Controls.Add(btnBuildFiscalCode);
+            Controls.Add(lblPlaceOfBirthMethod);
+            Controls.Add(cmbPlaceOfBirthMethod);
             Controls.Add(lstPeople);
             Controls.Add(lblGender);
             Controls.Add(cmbGender);
@@ -181,5 +216,8 @@
         private ComboBox cmbGender;
         private Label lblGender;
         private ListBox lstPeople;
+        private ComboBox cmbPlaceOfBirthMethod;
+        private Label lblPlaceOfBirthMethod;
+        private Button btnBuildFiscalCode;
     }
 }
