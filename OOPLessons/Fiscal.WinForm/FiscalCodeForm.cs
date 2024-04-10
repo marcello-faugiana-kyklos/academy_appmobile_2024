@@ -1,22 +1,24 @@
 using OOPClassLibrary.Fiscal;
+using OOPClassLibrary.Fiscal.IFaceMethod;
+using OOPClassLibrary.Fiscal.TemplateMethod;
 
 namespace Fiscal.WinForm
 {
-    public partial class Form1 : Form
+    public partial class FiscalCodeForm : Form
     {
-        private readonly Dictionary<PlaceOfBirthMethods, AbstractFiscalCodeBuilder> _fiscalCodeBuilders;
+        private readonly Dictionary<PlaceOfBirthMethods, FiscalCodeBuilderIFace> _fiscalCodeBuilders;
 
-        public Form1()
+        public FiscalCodeForm()
         {
             InitializeComponent();
             PopulateComboboxes();
             
             _fiscalCodeBuilders =
-                new Dictionary<PlaceOfBirthMethods, AbstractFiscalCodeBuilder>
+                new Dictionary<PlaceOfBirthMethods, FiscalCodeBuilderIFace>
                 {
-                    { PlaceOfBirthMethods.Dictionary, new FiscalCodeBuilderByDictionary() },
-                    { PlaceOfBirthMethods.If, new FiscalCodeBuilderByIf() },
-                    { PlaceOfBirthMethods.Database, new FiscalCodeBuilderByDatabase() }
+                    { PlaceOfBirthMethods.Dictionary, new FiscalCodeBuilderIFace(new PlaceOfBirthCodeRetrieverByDictionary()) },
+                    { PlaceOfBirthMethods.If, new FiscalCodeBuilderIFace(new PlaceOfBirthCodeRetrieverByIf()) },
+                    { PlaceOfBirthMethods.Database, new FiscalCodeBuilderIFace(new PlaceOfBirthCodeRetrieverByDatabase()) }
                 };
     }
 
@@ -84,7 +86,7 @@ namespace Fiscal.WinForm
                 PlaceOfBirthMethods p = Enum.Parse<PlaceOfBirthMethods>((cmbPlaceOfBirthMethod.SelectedItem as string)!);
                 var person = BuildPersonFromControls();
 
-                AbstractFiscalCodeBuilder fiscalCodeBuilder =
+                FiscalCodeBuilderIFace fiscalCodeBuilder =
                     _fiscalCodeBuilders[p];
 
                 string fiscalCode = fiscalCodeBuilder.Build(person);

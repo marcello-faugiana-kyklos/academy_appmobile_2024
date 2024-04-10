@@ -1,9 +1,51 @@
-﻿using System.Text;
+﻿using OOPClassLibrary.Support;
+using System.Text;
 
-namespace OOPClassLibrary.Fiscal;
+namespace OOPClassLibrary.Fiscal.MethodSwitch;
 
-public abstract class AbstractFiscalCodeBuilder
+public class FiscalCodeBuilderWithSwitch
 {
+    private static readonly Dictionary<string, string> belfioreCodes;
+    //new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
+    //{
+    //    { "Mazara del Vallo", "F061" },
+    //    { "Prato", "G999" },
+    //    { "Firenze", "D612" },
+    //    { "Roma", "H501" },
+    //    { "Torino", "L219" },
+    //    { "Milano", "F205" },
+    //    { "Giappone", "ZZ19" }
+    //};
+
+    static FiscalCodeBuilderWithSwitch()
+    {
+        // 1 - Dictionary
+        // 2 - if nel codice
+        // 3 - database (?)
+
+        //belfioreCodes = new Dictionary<string, string>();
+        //var lines = File.ReadLines(@"./Data/BelfioreCodes.txt");
+
+        //foreach (var line in lines) 
+        //{
+        //    var parts = line.Split('@');
+        //    string place = parts[0].Trim();
+        //    string code = parts[1].Trim();
+        //    belfioreCodes.Add(place, code);
+        //}        
+
+
+        // Linq
+        //  Language Integrated Query
+        //
+        belfioreCodes =
+            File
+            .ReadLines(@"./Data/BelfioreCodes.txt")
+            .Select(line => line.SplitLineIntoPlaceAndCode('|'))
+            .ToDictionary(x => x.Place, x => x.Code);
+    }
+
+
     private static readonly Dictionary<char, int> evenControlCodes =
         new Dictionary<char, int>
         {
@@ -86,21 +128,26 @@ public abstract class AbstractFiscalCodeBuilder
                 { 'Z', 23 }
         };
 
-    private static char[] monthLetters = 
-        ['A', 'B', 'C', 'D', 'E', 'H', 'L', 'M', 'P', 'R', 'S', 'T'];
+    //private readonly PlaceOfBirthMethods _placeOfBirthMethods;
 
-    public string Build
-    (
-        Person person
-    )
+    //public FiscalCodeBuilder(PlaceOfBirthMethods placeOfBirthMethods)
+    //{
+    //    _placeOfBirthMethods = placeOfBirthMethods;
+    //}
+
+    public string Build(Person person, PlaceOfBirthMethods placeOfBirthMethod)
+    //public string Build(Person person)
     {
         ArgumentNullException.ThrowIfNull(nameof(person));
         StringBuilder fiscalCodeBuidler = new StringBuilder();
 
         fiscalCodeBuidler.Append(GetLastNamePart(person.LastName));
-        fiscalCodeBuidler.Append(GetFirstNamePart(person.FirstName));
-        fiscalCodeBuidler.Append(GetBirthDateAndGenderPart(person.DateOfBirth, person.Gender));
-        fiscalCodeBuidler.Append(GetPlaceOfBirthCode(person.PlaceOfBirth));
+
+        // missing:
+        //   first
+        //   gender and birthday
+
+        fiscalCodeBuidler.Append(GetPlaceOfBirthCode(person.PlaceOfBirth, placeOfBirthMethod));
         fiscalCodeBuidler.Append(GetControlCode(fiscalCodeBuidler.ToString()));
 
         return fiscalCodeBuidler.ToString();
@@ -115,21 +162,6 @@ public abstract class AbstractFiscalCodeBuilder
             .PadRight(3, 'X')
             .Substring(0, 3);
 
-    }
-
-    private string GetFirstNamePart(string firstName)
-    {
-        var (vowels, consonants) = SplitStringIntoVowelsAndConsonants(firstName);
-
-        if (consonants.Length > 3)
-        {
-            return $"{consonants[0]}{consonants[2]}{consonants[3]}";
-        }
-
-        return
-            (consonants + vowels)
-            .PadRight(3, 'X')
-            .Substring(0, 3);
     }
 
     private static (string Vowels, string Consonants) SplitStringIntoVowelsAndConsonants(string s)
@@ -176,38 +208,74 @@ public abstract class AbstractFiscalCodeBuilder
         return (vow, cons);
     }
 
-    private string GetBirthDateAndGenderPart(DateOnly dateOfBirth, Gender gender)
+    private string GetPlaceOfBirthCode
+    (
+        string placeOfBirth,
+        PlaceOfBirthMethods placeOfBirthMethod
+    ) =>
+        placeOfBirthMethod switch
+        {
+            PlaceOfBirthMethods.Dictionary => GetPlaceOfBirthCodeByDictionary(placeOfBirth),
+            PlaceOfBirthMethods.If => GetPlaceOfBirthCodeByIf(placeOfBirth),
+            _ => throw new NotImplementedException($"Method {PlaceOfBirthMethods.Database} not implemented")
+        };
+
+    private string GetPlaceOfBirthCodeByDictionary(string placeOfBirth)
     {
-        string yearPart = (dateOfBirth.Year % 100).ToString("00");
-        string monthPart = monthLetters[dateOfBirth.Month - 1].ToString();
+        if (belfioreCodes.TryGetValue(placeOfBirth, out string? code))
+        {
+            return code;
+        }
 
-        string dayPart = (dateOfBirth.Day + (gender == Gender.Female ? 40 : 0)).ToString("00");
-
-
-        return yearPart + monthPart + dayPart;
+        throw new Exception($"'{placeOfBirth}' not found in database");
     }
 
-    protected abstract string GetPlaceOfBirthCode
-    (
-        string placeOfBirth
-        //PlaceOfBirthMethods placeOfBirthMethod
-    );
+    private string GetPlaceOfBirthCodeByIf(string placeOfBirth)
+    {
+        if (string.Equals(placeOfBirth, "Mazara Del Vallo", StringComparison.CurrentCultureIgnoreCase))
+        {
+            return "F061";
+        }
 
-    
+        if (string.Equals(placeOfBirth, "Prato", StringComparison.CurrentCultureIgnoreCase))
+        {
+            return "G999";
+        }
+        throw new Exception($"'{placeOfBirth}' not found in database");
+    }
+
     public string GetControlCode(string partialFiscalCode)
     {
         int total = 0;
         for (int i = 0; i < partialFiscalCode.Length; i++)
         {
             total +=
-                ((i + 1) % 2) switch
+                (i + 1) % 2 switch
                 {
                     0 => evenControlCodes[partialFiscalCode[i]],
-                    1 => oddControlCodes[partialFiscalCode[i]],
-                    _ => throw new Exception("???")
+                    _ => oddControlCodes[partialFiscalCode[i]]
                 };
         }
 
-        return ((char)('A' + (total % 26))).ToString();
+        return ((char)('A' + total % 26)).ToString();
     }
 }
+
+
+//public record VowelsAndConsonants
+//(
+//    string Vowels,
+//    string Consonants
+//);
+
+//public class VowelsAndConsonants
+//{
+//    public string Vowels { get; }
+//    public string Consonants { get; }
+
+//    public VowelsAndConsonants(string vowels, string consonants)
+//    {
+//        Vowels = vowels;
+//        Consonants = consonants;
+//    }
+//}

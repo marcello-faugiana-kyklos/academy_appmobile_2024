@@ -35,7 +35,8 @@
 
 */
 
-public class Point2D    //: IEquatable<Point2D>
+public class Point2D : IPoint2D
+//: IEquatable<Point2D>
 {
     private class Point2DZero : Point2D
     {
@@ -118,13 +119,8 @@ public class Point2D    //: IEquatable<Point2D>
     public virtual double DistanceFromOrigin() =>
         DistanceFromOtherPoint(Origin);
 
-    public double DistanceFromOtherPoint(Point2D other)
-    {
-        double dX = Math.Pow(X - other.X, 2);
-        double dY = Math.Pow(other.Y - Y, 2);
-
-        return Math.Sqrt(dX + dY);
-    }
+    public double DistanceFromOtherPoint(IPoint2D other) =>
+        Point2DHelpers.ComputedDistance(this, other);
 
     //public override int GetHashCode()
     //{
@@ -143,24 +139,10 @@ public class Point2D    //: IEquatable<Point2D>
 
 
     public override bool Equals(object? obj) =>
-        Equals(obj as Point2D);
+        Equals(obj as IPoint2D);
 
-    public bool Equals(Point2D? other)
-    {
-        if (other is null)
-        {
-            return false;
-        }
-
-        if (ReferenceEquals(this, other))
-        {
-            return true;
-        }
-
-        return
-            X == other.X
-            && Y == other.Y;
-    }
+    public bool Equals(IPoint2D? other) =>
+        Point2DHelpers.PointsAreEqual(this, other);
 
     public override int GetHashCode() =>
         HashCode.Combine(X, Y);

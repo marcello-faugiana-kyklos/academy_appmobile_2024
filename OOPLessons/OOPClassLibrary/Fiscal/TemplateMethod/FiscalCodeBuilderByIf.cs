@@ -1,4 +1,4 @@
-﻿namespace OOPClassLibrary.Fiscal;
+﻿namespace OOPClassLibrary.Fiscal.TemplateMethod;
 
 public class FiscalCodeBuilderByIf : AbstractFiscalCodeBuilder
 {

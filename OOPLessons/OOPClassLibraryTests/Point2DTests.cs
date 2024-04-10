@@ -1,10 +1,18 @@
 using FluentAssertions;
 using OOPClassLibrary.Geometry;
+using Xunit.Abstractions;
 
 namespace OOPClassLibraryTests;
 
 public class Point2DTests
 {
+    private readonly ITestOutputHelper _output;
+
+    public Point2DTests(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     [Fact]
     public void Test1()
     {
@@ -46,7 +54,7 @@ public class Point2DTests
     {
         Point2D p1 = new Point2D(3, 4);
 
-        for (int i = 0; i < 100_000_000; i++) 
+        for (int i = 0; i < 100_000_000; i++)
         {
             p1.DistanceFromOrigin();
         }
@@ -56,7 +64,7 @@ public class Point2DTests
     public void TestInnerClass()
     {
         Point2D p1 = new Point2D(3, 3);
-                
+
         object p2 = new Point2D(3);
 
         Point2D p3 = new Point2D(3, 3);
@@ -70,8 +78,8 @@ public class Point2DTests
     }
 
     [Fact]
-    public void TestDateTime() 
-    { 
+    public void TestDateTime()
+    {
         DateTime dt1 = new DateTime(2025, 1, 1);
         DateTime dt2 = new DateTime(2026, 1, 1);
 
@@ -85,4 +93,141 @@ public class Point2DTests
 
     }
 
+    [Fact]
+    public void TestIPoint2D_1()
+    {
+        object p1 = new Point2D(4, 6);
+        IPoint2D p2 = new Point2DImmutable(4, 6);
+
+        p1.Equals(p2).Should().BeTrue();
+        p2.Equals(p1).Should().BeTrue();
+
+        (p1 as Point2D)!.X = 9;
+        p1.Equals(p2).Should().BeFalse();
+        p2.Equals(p1).Should().BeFalse();
+    }
+
+    [Fact]
+    public void TestIPoint2D_2()
+    {
+        void PrintPoint(IPoint2D p)
+        {
+            _output.WriteLine(p.DistanceFromOrigin().ToString());
+        }
+
+        IPoint2D[] points =
+            [
+                new Point2D(3),
+                new Point2DImmutable(3, 3),
+                new Point2D(1, 9),
+                Point2DImmutable.Origin,
+                Point2D.Origin
+            ];
+
+        foreach (var point in points)
+        {
+            PrintPoint(point);
+        }
+    }
+
+
+    [Fact]
+    public void TestInterfaces_01()
+    {
+        void PrintB(IB b, int x)
+        {
+            b.M2(x);
+        }
+
+
+        IA a = null!;
+
+        a.M1(1);
+
+        IB b = null!;
+        b.M1(1);
+        double bm2 = b.M2(1);
+
+        IC c = null!;
+        c.M1(1);
+        DateOnly cm2 = c.M2(1);
+
+        ID d = null!;
+
+        d.M1(1);
+        d.M3("");
+        IB db = d;
+        double v1 = db.M2(1);
+
+        IC dc = d;
+        DateOnly v2 = dc.M2(1);
+
+        D d1 = new D();
+
+        (d1 as IB).M2(1);
+        (d1 as IC).M2(1);
+
+        PrintB(d1, 1);
+
+        Figure figure = new Figure();
+
+        SwimPool(figure);
+        Stadium(figure);
+        Meeting(figure);
+
+    }
+
+    private void SwimPool(IDiver diver) =>
+        diver.Swim();
+
+    private void Stadium(IFootballFan footballFan) =>
+        footballFan.Cheer();
+
+    private void Meeting(IPolitic politic) =>
+        politic.Speak();
+
+
+    [Fact]
+    public void TestArrayOfInterfaces_01()
+    {
+        object[] values = [ 1, 2, 3, 4 ];
+        string[] stringValues = ["Hello", "World", "!"];
+
+        values = [4, 5, 6];
+        values[0] = 1;
+
+        IComparer<object> o1 = null!;
+        IComparer<string> s1 = o1;
+
+        object oo = "";
+
+        IEnumerable<object> ooo = new List<string>();
+
+        IList<string> listStr = null!;
+        //IList<object> listObj = listStr;
+        //listStr = listObj;
+
+        /*   C[M]  C = array - M = string
+         *         C = List  - M = DateTime
+         * 
+         *  
+         *  M1 <: M2
+         * 
+         * C[M1] <: C[M2]  // COVARIANZA
+         * C[M1] :> C[M2]  // CONTROVARIANZA
+         * C[M1] <:> C[M2] // INVARIANZA
+         * 
+         * M1 = string
+         * M2 = object
+         * 
+         *  IEnumerable<string>    <:  IEnumerable<object>
+         * */
+
+        // string <: object
+
+        // string[] <: object[]
+
+        // COVARIANZA
+
+    }
 }

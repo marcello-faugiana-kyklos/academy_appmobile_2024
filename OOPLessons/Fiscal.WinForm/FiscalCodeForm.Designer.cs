@@ -1,6 +1,6 @@
 ﻿namespace Fiscal.WinForm
 {
-    partial class Form1
+    partial class FiscalCodeForm
     {
         /// <summary>
         ///  Required designer variable.

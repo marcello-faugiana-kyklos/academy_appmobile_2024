@@ -1,13 +1,13 @@
 ﻿using OOPClassLibrary.Support;
-using System.Net.Http.Headers;
 
-namespace OOPClassLibrary.Fiscal;
+namespace OOPClassLibrary.Fiscal.IFaceMethod;
 
-public class FiscalCodeBuilderByDictionary : AbstractFiscalCodeBuilder
+public class PlaceOfBirthCodeRetrieverByDictionary : 
+    IPlaceOfBirthCodeRetriever
 {
     private static readonly Dictionary<string, string> belfioreCodes;
 
-    static FiscalCodeBuilderByDictionary()
+    static PlaceOfBirthCodeRetrieverByDictionary()
     {
         belfioreCodes =
             File
@@ -15,19 +15,13 @@ public class FiscalCodeBuilderByDictionary : AbstractFiscalCodeBuilder
             .Select(line => line.SplitLineIntoPlaceAndCode('|'))
             .ToDictionary
             (
-                x => x.Place, 
-                x => x.Code, 
+                x => x.Place,
+                x => x.Code,
                 StringComparer.InvariantCultureIgnoreCase
             );
     }
 
-    protected override string GetPlaceOfBirthCode
-    (
-        string placeOfBirth
-    ) =>
-        GetPlaceOfBirthCodeByDictionary(placeOfBirth);
-
-    private string GetPlaceOfBirthCodeByDictionary(string placeOfBirth)
+    public string GetPlaceOfBirthCode(string placeOfBirth)
     {
         if (belfioreCodes.TryGetValue(placeOfBirth, out string? code))
         {
@@ -37,3 +31,5 @@ public class FiscalCodeBuilderByDictionary : AbstractFiscalCodeBuilder
         throw new Exception($"'{placeOfBirth}' not found in database");
     }
 }
+
+
