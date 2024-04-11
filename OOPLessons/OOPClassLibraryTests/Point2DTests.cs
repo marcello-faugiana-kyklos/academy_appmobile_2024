@@ -1,5 +1,6 @@
 using FluentAssertions;
 using OOPClassLibrary.Geometry;
+using OOPClassLibrary.Patterns;
 using Xunit.Abstractions;
 
 namespace OOPClassLibraryTests;
@@ -230,4 +231,99 @@ public class Point2DTests
         // COVARIANZA
 
     }
+
+    [Fact]
+    public void TestGetBookType()
+    {
+        BookType bookType = BookType.Avventura | BookType.Giallo | BookType.Fantascienza;
+        string[] typesAsString = GetStringRepresentation2(bookType);
+        typesAsString.Should().BeEquivalentTo("Avventura", "Giallo", BookType.Fantascienza.ToString());
+    }
+
+
+    private string[] GetStringRepresentation(BookType bookType)
+    {
+        List<string> list = new List<string>();
+        var values = Enum.GetValues<BookType>();
+
+        foreach (var v in values)
+        {            
+            if (v != BookType.None && bookType.HasFlag(v))
+            {
+                list.Add(v.ToString());
+            }
+        }
+
+        return list.ToArray();
+    }
+
+    private string[] GetStringRepresentation2(BookType bookType) =>
+        Enum.GetValues<BookType>()
+        .Where(v => v != BookType.None && bookType.HasFlag(v))
+        .Select(v => v.ToString())
+        .ToArray();
+
+    //{
+    //    List<string> list = new List<string>();
+    //    var values = Enum.GetValues<BookType>();
+
+    //    foreach (var v in values)
+    //    {
+    //        if (v != BookType.None && bookType.HasFlag(v))
+    //        {
+    //            list.Add(v.ToString());
+    //        }
+    //    }
+
+    //    return list.ToArray();
+    //}
+
+
+
+
+    [Flags]
+    private enum BookType
+    {
+        None = 0,
+        Giallo = 1,
+        Fantascienza = 2,
+        Avventura = 4,
+        Bambini = 8,
+        Thriller = 16
+    }
+
+    [Fact]
+    public void TestBooleanSingleton()
+    {
+        BooleanSingleton trueBooleanSingleton = BooleanSingleton.True;
+        BooleanSingleton falseBooleanSingleton = BooleanSingleton.False;
+        BooleanSingleton booleanSingleton3 = BooleanSingleton.True;
+
+        ReferenceEquals(trueBooleanSingleton, booleanSingleton3)
+            .Should()
+            .BeTrue();
+
+        BookCategory bookCategory = BookCategory.Avventura;
+        bookCategory.ToString().Should().Be("Avventura");
+
+        BookCategory.Avventura.Should().NotBe(BookCategory.Giallo);
+
+        string giallo = BookCategory.Giallo.Name;
+        giallo.Should().Be("Giallo");
+
+        BookCategory newYellowCategory = BookCategory.GetCategory(BookCategory.Giallo.ToString());
+        newYellowCategory.Should().Be(BookCategory.Giallo);
+
+        BookCategory thrillerCategory = BookCategory.GetCategory("Thriller");
+        thrillerCategory.Should().NotBe(BookCategory.Giallo);
+        BookCategory thrillerCategory2 = BookCategory.GetCategory("Thriller");
+        thrillerCategory2.Should().Be(thrillerCategory);
+
+
+        Type t1 = BookCategory.Giallo.GetType();
+        t1.Should().Be(typeof(BookCategory));
+
+    }
+
+
 }
