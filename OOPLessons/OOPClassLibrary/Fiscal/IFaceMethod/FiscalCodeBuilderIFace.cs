@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using OOPClassLibrary.Support;
+using System.Text;
 
 namespace OOPClassLibrary.Fiscal.IFaceMethod;
 
@@ -104,7 +105,8 @@ public class FiscalCodeBuilderIFace
         Person person
     )
     {
-        ArgumentNullException.ThrowIfNull(nameof(person));
+        person.AssertArgumentNotNull(nameof(person));
+
         StringBuilder fiscalCodeBuidler = new StringBuilder();
 
         fiscalCodeBuidler.Append(GetLastNamePart(person.LastName));

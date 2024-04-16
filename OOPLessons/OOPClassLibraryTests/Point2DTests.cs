@@ -324,6 +324,4 @@ public class Point2DTests
         t1.Should().Be(typeof(BookCategory));
 
     }
-
-
 }

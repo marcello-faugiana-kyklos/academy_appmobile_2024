@@ -138,7 +138,8 @@ public class FiscalCodeBuilderWithSwitch
     public string Build(Person person, PlaceOfBirthMethods placeOfBirthMethod)
     //public string Build(Person person)
     {
-        ArgumentNullException.ThrowIfNull(nameof(person));
+        person.AssertArgumentNotNull(nameof(person));
+
         StringBuilder fiscalCodeBuidler = new StringBuilder();
 
         fiscalCodeBuidler.Append(GetLastNamePart(person.LastName));
