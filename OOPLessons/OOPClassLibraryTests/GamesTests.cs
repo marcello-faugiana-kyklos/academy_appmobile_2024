@@ -25,6 +25,11 @@ public class GamesTests
         
         shadowOfErdtree.MainGame.Should().NotBeNull();
         shadowOfErdtree.MainGame.Should().Be(eldenRing);
+
+        Game trainSimulator = new("train-simulator", "Train Simulator");
+        trainSimulator.AddNewDlc("ts-italo", "Train Simulator Italo");
+        trainSimulator.AddNewDlc("ts-jr", "Train Simulator Japan Railways");
+        var dlcTrains = trainSimulator.DlcGames.ToArray();
     }
 
     [Fact]  
@@ -59,5 +64,15 @@ public class GamesTests
         p4.Value.Should().Be(150.00m);
 
         decimal d1 = p1;
+    }
+
+    [Fact]
+    public void WellKnownValuesTests()
+    {
+        var epiGamesStore = Store.EpicGames;
+        var epiclauncher = Launcher.EpicGames;
+
+        var steamStore = Store2.GetOrAddStore("steam");
+        ReferenceEquals(steamStore , Store2.Steam).Should().BeTrue();
     }
 }

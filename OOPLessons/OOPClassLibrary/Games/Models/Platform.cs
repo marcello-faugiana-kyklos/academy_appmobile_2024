@@ -1,8 +1,6 @@
-﻿using OOPClassLibrary.Support;
+﻿namespace OOPClassLibrary.Games.Models;
 
-namespace OOPClassLibrary.Games.Models;
-
-public class Platform : EntityWithIdAndName, IEquatable<Platform?>
+public class Platform : EntityWithIdAndName<Platform>, IEquatable<Platform?>
 {
     public static Platform NintendoSwitch { get; } = new Platform("nsw", "Nintendo Switch");
     public static Platform PlayStation { get; } = new Platform("ps", "Sony Playstation");
@@ -12,7 +10,7 @@ public class Platform : EntityWithIdAndName, IEquatable<Platform?>
     {
     }
 
-    private bool Equals(IEquatable<EntityWithIdAndName?> @this, Platform? other) =>
+    private bool Equals(IEquatable<EntityWithIdAndName<Platform>?> @this, Platform? other) =>
         @this.Equals(other);
 
     public bool Equals(Platform? other) =>

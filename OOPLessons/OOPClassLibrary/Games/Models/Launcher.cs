@@ -1,8 +1,6 @@
-﻿using OOPClassLibrary.Support;
+﻿namespace OOPClassLibrary.Games.Models;
 
-namespace OOPClassLibrary.Games.Models;
-
-public class Launcher : EntityWithIdAndName, IEquatable<Launcher?>
+public class Launcher : EntityWithIdAndName<Launcher>, IEquatable<Launcher?>
 {
     public static Launcher NintendoSwitch { get; } = new Launcher("nsw", "Nintendo Switch");
     public static Launcher PlayStation { get; } = new Launcher("ps", "Sony Playstation");
@@ -13,7 +11,12 @@ public class Launcher : EntityWithIdAndName, IEquatable<Launcher?>
     {
     }
 
-    private bool Equals(IEquatable<EntityWithIdAndName?> @this, Launcher? other) =>
+    static Launcher()
+    {
+        AddWellKnownValues();
+    }
+
+    private bool Equals(IEquatable<EntityWithIdAndName<Launcher>?> @this, Launcher? other) =>
         @this.Equals(other);
 
     public bool Equals(Launcher? other) =>
