@@ -222,14 +222,31 @@ CREATE TABLE order_details
 )
 
 INSERT INTO customers (CustomerId, CompanyName) VALUES(1, 'Terry ltd');
+INSERT INTO customers (CustomerId, CompanyName) VALUES(2, 'Frank''s Shop');
+INSERT INTO customers (CustomerId, CompanyName) VALUES(3, 'Cloud Frog');
+INSERT INTO customers (CustomerId, CompanyName) VALUES(4, 'Intent Corp.');
+INSERT INTO customers (CustomerId, CompanyName) VALUES(5, 'Manotti srl');
 
-INSERT INTO products (ProductId, ProductCode, ProductDescription, Price, Notes) 
+
+INSERT INTO products (ProductId, ProductCode, ProductDescription, Price, Notes)
 VALUES(1, 'HDMB01', 'Mother board XYZ', 250, null);
+INSERT INTO products (ProductId, ProductCode, ProductDescription, Price, Notes) 
+VALUES(2, 'HDPR01', 'Processor 1', 150, 'Base processor');
+INSERT INTO products (ProductId, ProductCode, ProductDescription, Price, Notes)
+VALUES(3, 'HDPR02', 'Processor 2', 180, 'Advanced processor');
+INSERT INTO products (ProductId, ProductCode, ProductDescription, Price, Notes)
+VALUES(4, 'HDRAM16', 'RAM 16GB', 110, '16GB RAM module');
+INSERT INTO products (ProductId, ProductCode, ProductDescription, Price, Notes)
+VALUES(5, 'HDRAM32', 'RAM 32GB', 190, '32GB RAM module');
+INSERT INTO products (ProductId, ProductCode, ProductDescription, Price, Notes)
+VALUES(6, 'HDRAM64', 'RAM 64GB', 230, '32GB RAM module');
+
 
 INSERT INTO orders (OrderId, CustomerId, OrderDate) VALUES(1, 1, Date('2024-02-13'));
 
 INSERT INTO order_details (OrderDetailsId, OrderId, ProductId, Qty, Price) 
 VALUES(1, 1, 1, 1, 240);
+
 
 
 
