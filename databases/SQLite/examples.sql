@@ -113,3 +113,138 @@ SELECT
 SELECT coalesce(NULL, ) AS RESULT
 
 
+
+/*
+
+1NF: PK + tipo campi atomici
+
+
+
+
+- Orders  (viola la 2NF perché CustomerId, CompanyName e OrderDate dipendono solo da OrderID e non da ProductId
+
+  OrderId     int      PK
+  CustomerId  int      
+  CompanyName string
+  ProductId   int      PK
+  ProductDescription string
+  OrderDate   Date
+  Qty         int
+  Price       numeric(6, 2)
+  
+--   
+
+Orders    (viola ls 3NF perché CompanyName dipende da CustomerId che NON è PK)
+
+  OrderId     int      PK
+  CustomerId  int      
+  CompanyName string
+  OrderDate   Date
+
+OrderDetails (viola la 2NF perché ProductDescription dipende solo da ProductId)
+
+  OrderId     int      PK - FK
+  ProductId   int      PK
+  ProductDescription string
+  Qty         int
+  Price       numeric(6, 2)
+
+-- 
+
+Customers
+
+  CustomerId  int     PK   
+  CompanyName string
+
+
+Orders 
+
+  OrderId     int      PK
+  CustomerId  int      FK
+  OrderDate   Date
+
+Products
+
+  ProductId   int      PK
+  ProductDescription string
+  Price       numeric(6, 2)
+
+
+OrderDetails
+
+  OrderId     int      PK - FK
+  ProductId   int      PK - FK
+  Qty         int
+  Price       numeric(6, 2)
+
+
+2NF e 3NF: ogni campo NON chiave deve dipendere solo ed eclusivamente dalla PK, non altro!
+
+*/
+
+
+CREATE TABLE customers
+(
+  CustomerId  int PRIMARY KEY,   
+  CompanyName varchar(30) NOT null
+)
+
+CREATE TABLE orders 
+(
+  OrderId     int PRIMARY KEY,
+  CustomerId  int NOT NULL REFERENCES customers(CustomerId),
+  OrderDate   Date
+)
+
+CREATE TABLE products
+(
+  ProductId   int PRIMARY key,
+  ProductCode varchar(10) NOT NULL,
+  ProductDescription varchar(100) NOT NULL,
+  Price       numeric(6, 2) NOT NULL,
+  Notes varchar(1000),
+  CHECK (price >= 0),
+  UNIQUE (ProductCode)
+)
+
+ CREATE INDEX IX_products_description ON products(ProductDescription)
+
+
+CREATE TABLE order_details
+(
+  OrderDetailsId int PRIMARY KEY,
+  OrderId     int NOT NULL references orders(OrderId),
+  ProductId   int NOT NULL references products(ProductId),
+  Qty         int NOT NULL,
+  Price       numeric(6, 2) NOT NULL,
+  CHECK (Qty >= 0 AND Price >= 0),
+  unique(OrderId, ProductId)
+)
+
+INSERT INTO customers (CustomerId, CompanyName) VALUES(1, 'Terry ltd');
+
+INSERT INTO products (ProductId, ProductCode, ProductDescription, Price, Notes) 
+VALUES(1, 'HDMB01', 'Mother board XYZ', 250, null);
+
+INSERT INTO orders (OrderId, CustomerId, OrderDate) VALUES(1, 1, Date('2024-02-13'));
+
+INSERT INTO order_details (OrderDetailsId, OrderId, ProductId, Qty, Price) 
+VALUES(1, 1, 1, 1, 240);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
