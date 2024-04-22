@@ -186,7 +186,7 @@ OrderDetails
 CREATE TABLE customers
 (
   CustomerId  int PRIMARY KEY,   
-  CompanyName varchar(30) NOT null
+  CompanyName varchar(30) NOT NULL
 )
 
 CREATE TABLE orders 
@@ -195,6 +195,8 @@ CREATE TABLE orders
   CustomerId  int NOT NULL REFERENCES customers(CustomerId),
   OrderDate   Date
 )
+
+CREATE INDEX IX_orders_customerId ON orders(CustomerId)
 
 CREATE TABLE products
 (
@@ -226,7 +228,7 @@ INSERT INTO customers (CustomerId, CompanyName) VALUES(2, 'Frank''s Shop');
 INSERT INTO customers (CustomerId, CompanyName) VALUES(3, 'Cloud Frog');
 INSERT INTO customers (CustomerId, CompanyName) VALUES(4, 'Intent Corp.');
 INSERT INTO customers (CustomerId, CompanyName) VALUES(5, 'Manotti srl');
-
+INSERT INTO customers (CustomerId, CompanyName) VALUES(6, 'Terry ltd');
 
 INSERT INTO products (ProductId, ProductCode, ProductDescription, Price, Notes)
 VALUES(1, 'HDMB01', 'Mother board XYZ', 250, null);
@@ -243,24 +245,328 @@ VALUES(6, 'HDRAM64', 'RAM 64GB', 230, '32GB RAM module');
 
 
 INSERT INTO orders (OrderId, CustomerId, OrderDate) VALUES(1, 1, Date('2024-02-13'));
+INSERT INTO orders (OrderId, CustomerId, OrderDate) VALUES(2, 2, Date('2024-03-12'));
+INSERT INTO orders (OrderId, CustomerId, OrderDate) VALUES(3, 1, Date('2024-01-03'));
+INSERT INTO orders (OrderId, CustomerId, OrderDate) VALUES(4, 3, Date('2024-04-18'));
+
+
+
 
 INSERT INTO order_details (OrderDetailsId, OrderId, ProductId, Qty, Price) 
 VALUES(1, 1, 1, 1, 240);
 
+INSERT INTO order_details (OrderDetailsId, OrderId, ProductId, Qty, Price) 
+VALUES(2, 1, 2, 2, 150);
+
+INSERT INTO order_details (OrderDetailsId, OrderId, ProductId, Qty, Price) 
+VALUES(3, 1, 4, 1, 105);
+
+SELECT * FROM products p 
+
+INSERT INTO order_details (OrderDetailsId, OrderId, ProductId, Qty, Price) 
+VALUES(4, 2, 1, 1, 240);
+
+INSERT INTO order_details (OrderDetailsId, OrderId, ProductId, Qty, Price) 
+VALUES(5, 2, 2, 2, 150);
+
+INSERT INTO order_details (OrderDetailsId, OrderId, ProductId, Qty, Price) 
+VALUES(6, 2, 3, 2, 105);
+
+INSERT INTO order_details (OrderDetailsId, OrderId, ProductId, Qty, Price) 
+VALUES(7, 2, 4, 3, 240);
+
+INSERT INTO order_details (OrderDetailsId, OrderId, ProductId, Qty, Price) 
+VALUES(8, 3, 5, 2, 150);
+
+INSERT INTO order_details (OrderDetailsId, OrderId, ProductId, Qty, Price) 
+VALUES(9, 3, 4, 2, 105);
+
+INSERT INTO order_details (OrderDetailsId, OrderId, ProductId, Qty, Price) 
+VALUES(10, 3, 3, 4, 240);
+
+INSERT INTO order_details (OrderDetailsId, OrderId, ProductId, Qty, Price) 
+VALUES(11, 4, 2, 1, 150);
+
+INSERT INTO order_details (OrderDetailsId, OrderId, ProductId, Qty, Price) 
+VALUES(12, 4, 1, 3, 105);
+
+
+SELECT 
+    o.OrderId,
+    c.CompanyName,
+    o.OrderDate 
+FROM 
+    orders o
+INNER join 
+    customers c 
+ON 
+    o.CustomerId = c.CustomerId 
+
+
+SELECT 
+    o.OrderId,
+    c.CompanyName,
+    o.OrderDate 
+FROM
+    customers c 
+INNER join 
+    orders o
+ON 
+    o.CustomerId = c.CustomerId
+WHERE 
+    strftime('%Y',o.OrderDate) = '2024'
+
+
+    SELECT c.*
+    FROM 
+    customers c
+    CROSS JOIN orders o
+    
+    
+/*
+ JOIN
+
+ - CROSS
+ - INNER
+ - LEFT
+ - RIGHT
+ - FULL OUTER
+ - LATERAL/(CROSS APPLY) 
+
+*/
+
+SELECT CustomerId  FROM customers c    
+
+SELECT DISTINCT customerid FROM orders o 
+
+
+SELECT c.* --, o.OrderId 
+FROM customers c 
+LEFT join 
+    orders o
+ON 
+    o.CustomerId = c.CustomerId
+WHERE 
+    o.OrderId IS null
+
+    
+SELECT c.*
+FROM customers c 
+WHERE NOT EXISTS 
+(
+    SELECT 
+        o.customerId 
+    FROM 
+        orders o 
+    WHERE 
+        o.customerId = c.CustomerId
+)
+
+SELECT c.*
+FROM customers c 
+WHERE c.CustomerId NOT in 
+(
+    SELECT 
+        o.customerId 
+    FROM 
+        orders o 
+)
+    
+    
+SELECT c.* , o.OrderId 
+FROM orders o  
+right join 
+    customers c
+ON 
+    o.CustomerId = c.CustomerId
+WHERE 
+    o.OrderId IS null
+    
+SELECT p.*
+FROM products p 
+LEFT JOIN order_details od 
+ON p.ProductId = od.ProductId 
+WHERE od.OrderDetailsId IS null
+
+
+SELECT * FROM orders o 
+
+
+
+SELECT 
+    o.OrderId, 
+    o.OrderDate, 
+    c.CompanyName, 
+    p.ProductCode,
+    p.ProductDescription,
+    od.Qty,
+    od.Price,
+    od.Price * od.Qty AS total_row
+FROM orders o
+INNER JOIN  customers c ON o.CustomerId = c.CustomerId 
+INNER JOIN order_details od ON o.OrderId = od.OrderId 
+INNER JOIN products p ON od.ProductId = p.ProductId 
+WHERE o.OrderId = 1
+
+
+SELECT 
+    od.ProductId, 
+    count(*) AS order_rows_count, 
+    sum(od.Qty * od.Price) AS total_order, 
+    min(od.Price) AS min_value,
+    max(od.Price) AS max_value
+FROM order_details od 
+GROUP BY od.ProductId  
 
 
 
 
+SELECT * FROM order_details od 
+
+    
+SELECT c.* , o.OrderId 
+FROM orders o  
+right join 
+    customers c
+ON 
+    o.CustomerId = c.CustomerId
+WHERE 
+    o.OrderId IS null    
+
+
+    
+SELECT 
+    X.OrderId,
+    (SELECT Price FROM order_details) AS TOTAL
+FROM 
+(
+    SELECT o.OrderDate AS OrderId, o.OrderId, od.OrderId, od.ProductId  FROM 
+    orders o 
+    FULL outer JOIN order_details od 
+    ON o.OrderId = od.OrderId 
+) X
 
 
 
+SELECT od.ProductId , od.Price AS OD_price, p.Price AS P_price, od.Price - p.price AS diff
+FROM order_details od
+INNER JOIN products p ON od.ProductId = p.ProductId 
+
+WHERE od.OrderId <> 1
 
 
 
+WITH updCTE AS (
+    SELECT od.OrderDetailsId, p.price
+    FROM order_details od
+    INNER JOIN products p ON od.ProductId = p.ProductId  
+    WHERE od.OrderId <> 1 
+) 
 
 
+UPDATE order_details 
+SET price = p.price + (random() % 10)
+FROM order_details od
+INNER JOIN products p ON od.ProductId = p.ProductId  
+WHERE 
+od.OrderDetailsId = order_details.OrderDetailsId 
+    
+    
+    
+    SELECT (random() % 10)
+    FROM order_details od 
+    
+/*
+   numero di ordini fatti da OGNI cliente
+   mostrare CustomerId, CompanyName, Orders_count
+*/
+
+SELECT * FROM customers c    
+    
+SELECT 
+    c.CustomerId,
+    c.CompanyName,
+    count(o.OrderId) AS orders_count
+FROM customers c
+left JOIN orders o 
+ON c.CustomerId = o.CustomerId 
+GROUP BY
+    c.CustomerId,
+    c.CompanyName
+    
+    
+-- Il  (o i) prodotto più venduto
+-- id prodotto, codice del prodotto, quantità venduta
+
+SELECT max(X.qty)
+FROM 
+(
+    SELECT p.ProductId , p.ProductCode, sum(od.Qty) AS qty 
+    FROM products p
+    INNER JOIN  order_details od 
+    ON p.ProductId = od.ProductId 
+    GROUP BY p.ProductId , p.ProductCode    
+) X   
+
+-- soluzione con nested query
+SELECT X.*
+FROM 
+(
+    SELECT p.ProductId , p.ProductCode, sum(od.Qty) AS qty 
+    FROM products p
+    INNER JOIN  order_details od 
+    ON p.ProductId = od.ProductId 
+    GROUP BY p.ProductId , p.ProductCode    
+) X
+WHERE X.qty =
+    (
+        SELECT max(Y.qty)
+        FROM 
+        (
+            SELECT p.ProductId , p.ProductCode, sum(od.Qty) AS qty 
+            FROM products p
+            INNER JOIN  order_details od 
+            ON p.ProductId = od.ProductId 
+            GROUP BY p.ProductId , p.ProductCode    
+        ) Y
+    )
+
+    
+-- soluzione 1 con Common Table Expression
+WITH products_sum AS
+(
+    SELECT p.ProductId , p.ProductCode, sum(od.Qty) AS qty 
+    FROM products p
+    INNER JOIN  order_details od 
+    ON p.ProductId = od.ProductId 
+    GROUP BY p.ProductId , p.ProductCode     
+)    
+SELECT X.* FROM products_sum X
+WHERE X.qty = 
+(
+    SELECT max(Y.qty) FROM products_sum Y
+)
+
+-- soluzione 2 con Common Table Expression
+
+WITH products_with_total_qty AS 
+(
+    SELECT od.ProductId, sum(od.Qty) AS qty 
+    from order_details od 
+    GROUP BY od.ProductId
+),
+max_quantities AS 
+(
+    SELECT max(qty) AS max_qty FROM products_with_total_qty
+)
+SELECT p.ProductId, p.ProductCode, a.qty
+FROM products p
+INNER JOIN products_with_total_qty a ON p.ProductId = a.ProductID
+INNER JOIN max_quantities m ON m.max_qty = a.qty
 
 
+-- cliente (o clienti) che ha speso più di tutti
+-- customerid, companyname, amount
 
 
 
