@@ -554,6 +554,7 @@ WITH products_with_total_qty AS
     SELECT od.ProductId, sum(od.Qty) AS qty 
     from order_details od 
     GROUP BY od.ProductId
+    ORDER BY 2 desc
 ),
 max_quantities AS 
 (
@@ -565,9 +566,302 @@ INNER JOIN products_with_total_qty a ON p.ProductId = a.ProductID
 INNER JOIN max_quantities m ON m.max_qty = a.qty
 
 
+
+
+
 -- cliente (o clienti) che ha speso più di tutti
+-- customerid, companyname, amount
+WITH A AS 
+(
+    SELECT o.CustomerId, sum(od.Qty * od.Price) AS Total
+    FROM orders o 
+    INNER JOIN order_details od 
+    ON o.OrderId = od.OrderId 
+    GROUP BY o.CustomerId 
+),
+B AS 
+(
+    SELECT max(Total) AS max_total FROM A
+)    
+select A.CustomerId, c.CompanyName, A.Total
+FROM A
+INNER JOIN customers c ON c.CustomerId = A.CustomerId
+INNER JOIN B ON A.Total = B.max_total
+
+
+
+-- cliente (o clienti) che ha speso meno di tutti (fra i clientii che hanno fatto almeno un ordine).
+-- In aggiunta si vogliono anche i clienti che NON hanno fatto mai un ordine
 -- customerid, companyname, amount
 
 
+WITH A AS 
+(
+    SELECT o.CustomerId, sum(od.Qty * od.Price) AS Total
+    FROM orders o 
+    INNER JOIN order_details od 
+    ON o.OrderId = od.OrderId 
+    GROUP BY o.CustomerId 
+),
+B AS 
+(
+    SELECT min(Total) AS min_total FROM A
+)    
+select A.CustomerId, c.CompanyName, A.Total
+FROM A
+INNER JOIN customers c ON c.CustomerId = A.CustomerId
+INNER JOIN B ON A.Total = B.min_total
+UNION all
+SELECT c.CustomerId, c.CompanyName, 0
+FROM customers c 
+WHERE NOT EXISTS 
+(
+    SELECT 
+        o.customerId 
+    FROM 
+        orders o 
+    WHERE 
+        o.customerId = c.CustomerId
+)
 
 
+
+-- UNKNOWN op something -> UNKNOWN -> FALSE
+
+
+
+-- 1 4 5 6
+SELECT c.CustomerId, c.CompanyName 
+FROM customers c 
+WHERE c.CompanyName LIKE '%T%'
+EXCEPT
+--3 4
+SELECT c.CustomerId, c.CompanyName 
+FROM customers c 
+WHERE c.CompanyName LIKE '%C%'
+
+
+
+
+SELECT * FROM customers c WHERE c.CompanyName
+
+
+
+CREATE VIEW v_totals_for_customers
+AS 
+SELECT o.CustomerId, sum(od.Qty * od.Price) AS Total
+    FROM orders o 
+    INNER JOIN order_details od 
+    ON o.OrderId = od.OrderId 
+    GROUP BY o.CustomerId
+
+    
+SELECT * FROM v_totals_for_customers x
+WHERE x.total > 1000
+
+
+WITH CTE AS
+(
+    SELECT * FROM v_totals_for_customers 
+)   
+SELECT * FROM CTE 
+LIMIT 1 offset 2
+
+WHERE total > 1000
+
+-- scrivere una query per generare i numeri interi da m a n (da 1 a 100)
+
+CREATE TABLE digits
+(
+  d int PRIMARY key
+)
+
+
+INSERT INTO digits(d) values(0);
+INSERT INTO digits(d) values(1);
+INSERT INTO digits(d) values(2);
+INSERT INTO digits(d) values(3);
+INSERT INTO digits(d) values(4);
+INSERT INTO digits(d) values(5);
+INSERT INTO digits(d) values(6);
+INSERT INTO digits(d) values(7);
+INSERT INTO digits(d) values(8);
+INSERT INTO digits(d) values(9);
+
+
+WITH numbers AS
+(
+    SELECT --d3.d, d2.d, d1.d, 
+        d3.d * 100 + d2.d * 10 + d1.d AS n
+    FROM digits d1
+    CROSS JOIN digits d2
+    CROSS JOIN digits d3
+)
+SELECT num.n FROM  numbers num
+WHERE num.n BETWEEN 10 AND 73
+ORDER BY 1 desc
+
+173 = 3 * 10^0 + 7 * 10 + 1 * 10^2
+
+
+-- CTE ricorsiva
+
+WITH numbers AS
+(
+    SELECT 1 AS n
+    UNION ALL 
+    SELECT n + 1
+    FROM numbers
+    WHERE n < 100
+)
+SELECT * FROM numbers
+WHERE n BETWEEN 10 AND 73
+ORDER BY 1
+
+
+-- I primi 3 prodotti più venduti
+-- id prodotto, codice del prodotto, quantità venduta
+
+
+>= 2000 -> VIP
+>= 1000 e < 2000 -> STANDARD
+< 1000   -> POOR
+
+WITH customers_with_amounts AS
+(
+    SELECT 
+        o.CustomerId, 
+        sum(od.Qty * od.Price) AS Total
+    FROM orders o 
+    INNER JOIN order_details od 
+    ON o.OrderId = od.OrderId 
+    GROUP BY o.CustomerId 
+),
+customers_with_label AS 
+(
+    SELECT 
+        A.CustomerId, 
+        A.Total,
+        CASE 
+            WHEN A.Total >= 1900 THEN 'VIP' 
+            WHEN A.Total >= 1000 AND A.Total < 1900 THEN 'Standard'
+            ELSE 'Poor'
+        END AS Label    
+    FROM 
+    customers_with_amounts A
+)
+SELECT c.CustomerId, c.CompanyName , cl.Total, cl.Label FROM 
+Customers c
+INNER JOIN customers_with_label cl ON c.CustomerId = cl.CustomerId
+ORDER BY cl.Total DESC, c.CompanyName
+    
+
+SELECT * FROM orders o 
+
+    
+
+WITH rnd AS
+(SELECT (abs(random()) % 100) AS n)
+select
+    CASE  
+       WHEN n  > 70 THEN '> 70'
+       WHEN n between 30 AND 69 THEN '[30, 69]'
+       ELSE '< 30'
+    END 
+FROM rnd    
+
+SELECT CAST(strftime('%m', o.OrderDate) AS int) FROM 
+orders o 
+
+--strftime('%m'    
+WITH months AS
+(
+    SELECT 1 AS month_n, 'Gennaio' AS month_desc
+    UNION all
+    SELECT 2 AS month_n, 'Febbraio' AS month_desc
+    UNION all
+    SELECT 3 AS month_n, 'Marzo' AS month_desc
+    UNION all
+    SELECT 4 AS month_n, 'Aprile' AS month_desc
+    UNION all
+    SELECT 5 AS month_n, 'Maggio' AS month_desc
+    UNION all
+    SELECT 6 AS month_n, 'Giugno' AS month_desc
+    UNION all
+    SELECT 7 AS month_n, 'Luglio' AS month_desc
+    UNION all
+    SELECT 8 AS month_n, 'Agosto' AS month_desc
+    UNION all
+    SELECT 9 AS month_n, 'Settembre' AS month_desc
+    UNION all
+    SELECT 10 AS month_n, 'Ottobre' AS month_desc
+    UNION all
+    SELECT 11 AS month_n, 'Novembre' AS month_desc
+    UNION all
+    SELECT 12 AS month_n, 'Dicembre' AS month_desc
+),
+cust_amount_by_month as
+(
+SELECT 
+        o.CustomerId, 
+        CAST(strftime('%m', o.OrderDate) AS int) AS order_month,
+        sum(od.Qty * od.Price) AS Total
+    FROM orders o     
+    CROSS join months
+    INNER JOIN order_details od ON o.OrderId = od.OrderId 
+    WHERE strftime('%Y', o.OrderDate) = '2024'
+    GROUP BY 
+        o.CustomerId, 
+        CAST(strftime('%m', o.OrderDate) AS int)
+ )
+ SELECT c.customerid, m.month_n, c.Total FROM
+ cust_amount_by_month c
+ CROSS JOIN months m
+ ORDER BY 1, m.month_n
+ 
+ 
+ 
+ SELECT *
+ FROM 
+ 
+ 
+WITH months AS
+(
+    SELECT 1 AS month_n, 'Gennaio' AS month_desc
+    UNION all
+    SELECT 2 AS month_n, 'Febbraio' AS month_desc
+    UNION all
+    SELECT 3 AS month_n, 'Marzo' AS month_desc
+    UNION all
+    SELECT 4 AS month_n, 'Aprile' AS month_desc
+    UNION all
+    SELECT 5 AS month_n, 'Maggio' AS month_desc
+    UNION all
+    SELECT 6 AS month_n, 'Giugno' AS month_desc
+    UNION all
+    SELECT 7 AS month_n, 'Luglio' AS month_desc
+    UNION all
+    SELECT 8 AS month_n, 'Agosto' AS month_desc
+    UNION all
+    SELECT 9 AS month_n, 'Settembre' AS month_desc
+    UNION all
+    SELECT 10 AS month_n, 'Ottobre' AS month_desc
+    UNION all
+    SELECT 11 AS month_n, 'Novembre' AS month_desc
+    UNION all
+    SELECT 12 AS month_n, 'Dicembre' AS month_desc
+)
+SELECT 
+  c.CustomerId, 
+  m.month_n,
+  COALESCE(sum(od.Qty * od.Price), 0) AS Total
+FROM customers c 
+    CROSS join months m
+    left JOIN orders o ON c.CustomerId = o.CustomerId     
+    left JOIN order_details od 
+        ON o.OrderId = od.OrderId     
+        AND CAST(strftime('%m', o.OrderDate) AS int) = m.month_n
+    GROUP by
+        c.CustomerId, 
+        m.month_n
+ORDER BY 1, 2 
