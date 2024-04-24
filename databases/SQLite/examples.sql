@@ -109,17 +109,11 @@ SELECT
     strftime('%d',date('now')) AS current_date
 
 
-
 SELECT coalesce(NULL, ) AS RESULT
 
 
-
 /*
-
 1NF: PK + tipo campi atomici
-
-
-
 
 - Orders  (viola la 2NF perché CustomerId, CompanyName e OrderDate dipendono solo da OrderID e non da ProductId
 
@@ -865,3 +859,12 @@ FROM customers c
         c.CustomerId, 
         m.month_n
 ORDER BY 1, 2 
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,220 @@
+Partendo dal modello a oggetti creato in precedenza per la collezione di videogiochi, creare un modello relazionale che lo rappresenti.
+Creare le istruzioni DDL per la creazione delle tabelle, indici, ecc.
+
+Creare gli script SQL di inserimento dati.
+
+Creare delle query per rispondere a questi quesiti:
+
+- Quali giochi esistono in collezione che contengono nel loro nome una certa parola?
+
+- Creare una query per recuperare, per ogni store, quanti giochi abbiamo acquistato presso quello store e quanto abbiamo speso.
+
+- Elenco dei soli giochi che possediamo per più di una piattaforma o launcher.
+
+- Mostrare, per ogni launcher, quanti giochi abbiamo e quanto abbiamo speso.
+
+- Mostrare, per ogni piattaforma, quanti giochi abbiamo e quanto abbiamo speso.
+
+- Scrivere una query per mostrare:
+  * il numero totale di giochi posseduti
+  * la somma totale spesa
+  * il prezzo massimo speso per un gioco
+  * il prezzo più basso pagato per un gioco
+  * il numero totale di giochi gratuiti
+  * il numero totale di giochi pagati
+  * il costo medio per gioco
+  * il costo medio dei giochi pagati
+
+- Lista di tutti i giochi che hanno un DLC, incluse le informazioni sui DLC.
+  Ogni riga deve rappresentare un gioco.
+  Prima va la riga del gioco "principale", poi una riga per ogni DLC del gioco.
+
+
+
+-------------------------------------------------------------------------------
+
+
+
+CREATE TABLE stores
+(
+    store_id varchar(30) PRIMARY KEY,
+    store_name varchar(100) NOT NULL UNIQUE,
+    store_url varchar(100)
+);
+
+INSERT INTO stores (store_id, store_name, store_url) VALUES('steam', 'Steam Store', 'https://store.steampowered.com/');
+INSERT INTO stores (store_id, store_name, store_url) VALUES('epic-games', 'Epic Games Store', 'https://store.epicgames.com/');
+INSERT INTO stores (store_id, store_name, store_url) VALUES('gog', 'GOG Store', 'https://www.gog.com/');
+INSERT INTO stores (store_id, store_name, store_url) VALUES('eshop', 'Nintendo eShop', 'https://www.nintendo.com/');
+INSERT INTO stores (store_id, store_name, store_url) VALUES('xbox-store', 'Xbox Store', 'https://www.xbox.com/');
+INSERT INTO stores (store_id, store_name, store_url) VALUES('amazon', 'Amazon', 'https://www.amazon.com/');
+
+SELECT * FROM stores
+
+-------------------------------
+
+CREATE TABLE platforms
+(
+    platform_id varchar(30) PRIMARY KEY,
+    platform_name varchar(100) NOT NULL UNIQUE
+);
+
+INSERT INTO platforms (platform_id, platform_name) VALUES('pc', 'Personal Computer Windows');
+INSERT INTO platforms (platform_id, platform_name) VALUES('ps5', 'Play Station 5');
+INSERT INTO platforms (platform_id, platform_name) VALUES('xbox-series-xs', 'Xbox Series X/S');
+INSERT INTO platforms (platform_id, platform_name) VALUES('nsw', 'Nintendo Switch');
+
+SELECT * FROM platforms
+
+-------------------------------
+CREATE TABLE launchers
+(
+    launcher_id varchar(30) PRIMARY KEY,
+    launcher_name varchar(100) NOT NULL UNIQUE
+);
+
+INSERT INTO launchers (launcher_id, launcher_name) VALUES('steam', 'Steam');
+INSERT INTO launchers (launcher_id, launcher_name) VALUES('epic-games', 'Epic Games');
+INSERT INTO launchers (launcher_id, launcher_name) VALUES('gog', 'GOG Galaxy');
+INSERT INTO launchers (launcher_id, launcher_name) VALUES('xbox-xs', 'Xbox');
+INSERT INTO launchers (launcher_id, launcher_name) VALUES('xbox-pc', 'Microsoft Xbox per PC');
+INSERT INTO launchers (launcher_id, launcher_name) VALUES('nsw', 'Nintendo Switch');
+
+SELECT * FROM launchers
+
+-------------------------------
+
+CREATE TABLE games
+(
+    game_id varchar(30) PRIMARY KEY,
+    game_title varchar(200) NOT NULL UNIQUE,
+    json_data clob NULL,
+    main_game_id varchar(30) NULL REFERENCES games(game_id)
+);
+
+
+INSERT INTO games (game_id, game_title, json_data, main_game_id) VALUES('zelda-botw', 'The Legend of Zelda: Breath of the Wild', null, null);
+INSERT INTO games (game_id, game_title, json_data, main_game_id) VALUES('zelda-botw-exp-pass', 'The Legend of Zelda: Breath of the Wild Expansion Pass', null, 'zelda-botw');
+
+INSERT INTO games (game_id, game_title, json_data, main_game_id) VALUES('elden-ring', 'Elden Ring', null, null);
+INSERT INTO games (game_id, game_title, json_data, main_game_id) VALUES('elden-ring-shadow-eldtree', 'Elden Ring Shadows of the Erdtree', null, 'elden-ring');
+
+INSERT INTO games (game_id, game_title, json_data, main_game_id) VALUES('celeste', 'Celeste', null, null);
+INSERT INTO games (game_id, game_title, json_data, main_game_id) VALUES('super-mario-wonder', 'Super Mario Wonder', null, null);
+INSERT INTO games (game_id, game_title, json_data, main_game_id) VALUES('forza-horizon-5', 'Forza Horizon 5', null, null);
+INSERT INTO games (game_id, game_title, json_data, main_game_id) VALUES('guardians-of-the-galaxy', 'Marvel Guardians of the Galaxy', null, null);
+
+INSERT INTO games (game_id, game_title, json_data, main_game_id) VALUES('fallout-4', 'Fallout 4', null, null);
+INSERT INTO games (game_id, game_title, json_data, main_game_id) VALUES('fallout-4-automatron', 'Automatron', null, 'fallout-4');
+INSERT INTO games (game_id, game_title, json_data, main_game_id) VALUES('fallout-4-wasteland-workshop', 'Wasteland Workshop', null, 'fallout-4');
+INSERT INTO games (game_id, game_title, json_data, main_game_id) VALUES('fallout-4-far-harbor', 'Far Harbor', null, 'fallout-4');
+
+INSERT INTO games (game_id, game_title, json_data, main_game_id) VALUES('ac2', 'Assassin''s Creed II', null, null);
+INSERT INTO games (game_id, game_title, json_data, main_game_id) VALUES('ac2-battaglia', 'Assassin''s Creed II La battaglia di Forlì', null, 'ac2');
+
+SELECT * FROM games
+
+-------------------------------
+
+CREATE TABLE media_formats
+(
+    media_format_id varchar(10) PRIMARY KEY,
+    media_format varchar(30) NOT NULL unique
+);
+
+INSERT INTO media_formats (media_format_id, media_format) VALUES('dig', 'Digital');
+INSERT INTO media_formats (media_format_id, media_format) VALUES('phi', 'Phisycal');
+
+SELECT * FROM media_formats mf 
+-------------------------------
+
+CREATE TABLE game_transactions
+(
+    game_tx_id varchar(30) PRIMARY KEY,
+    game_id varchar(30) NOT NULL REFERENCES games(game_id),
+    store_id varchar(30) NOT NULL REFERENCES stores(store_id),
+    platform_id varchar(30) NOT NULL REFERENCES platforms(platform_id),
+    launcher_id varchar(30) NOT NULL REFERENCES launchers(launcher_id),
+    media_format_id varchar(10) NOT NULL REFERENCES media_formats(media_format_id),
+    acquire_date date,
+    purchase_price numeric(6, 2) NOT null,
+    UNIQUE (game_id, store_id, platform_id, launcher_id, media_format_id),
+    check(purchase_price >= 0)
+);
+
+INSERT INTO game_transactions (game_tx_id, game_id, store_id, platform_id, launcher_id, media_format_id, acquire_date, purchase_price) 
+VALUES(hex(randomblob(5)), 'zelda-botw', 'amazon', 'nsw', 'nsw', 'phi', '2020-03-18', 55.50);
+
+INSERT INTO game_transactions (game_tx_id, game_id, store_id, platform_id, launcher_id, media_format_id, acquire_date, purchase_price) 
+VALUES(hex(randomblob(5)), 'zelda-botw-exp-pass', 'eshop', 'nsw', 'nsw', 'dig', '2023-05-28', 15.00);
+
+INSERT INTO game_transactions (game_tx_id, game_id, store_id, platform_id, launcher_id, media_format_id, acquire_date, purchase_price) 
+VALUES(hex(randomblob(5)), 'elden-ring', 'steam', 'pc', 'steam', 'dig', '2023-07-22', 33.00);
+
+INSERT INTO game_transactions (game_tx_id, game_id, store_id, platform_id, launcher_id, media_format_id, acquire_date, purchase_price) 
+VALUES(hex(randomblob(5)), 'elden-ring-shadow-eldtree', 'steam', 'pc', 'steam', 'dig', '2024-04-10', 40.00);
+
+INSERT INTO game_transactions (game_tx_id, game_id, store_id, platform_id, launcher_id, media_format_id, acquire_date, purchase_price) 
+VALUES(hex(randomblob(5)), 'forza-horizon-5', 'xbox-store', 'xbox-series-xs', 'xbox-xs', 'dig', '2022-11-13', 20.00);
+
+INSERT INTO game_transactions (game_tx_id, game_id, store_id, platform_id, launcher_id, media_format_id, acquire_date, purchase_price) 
+VALUES(hex(randomblob(5)), 'super-mario-wonder', 'eshop', 'nsw', 'nsw', 'dig', '2024-01-19', 49.99);
+
+INSERT INTO game_transactions (game_tx_id, game_id, store_id, platform_id, launcher_id, media_format_id, acquire_date, purchase_price) 
+VALUES(hex(randomblob(5)), 'guardians-of-the-galaxy', 'epic-games', 'pc', 'epic-games', 'dig', '2024-01-13', 0);
+
+INSERT INTO game_transactions (game_tx_id, game_id, store_id, platform_id, launcher_id, media_format_id, acquire_date, purchase_price) 
+VALUES(hex(randomblob(5)), 'fallout-4', 'steam', 'pc', 'steam', 'dig', '2024-04-10', 5.50);
+
+INSERT INTO game_transactions (game_tx_id, game_id, store_id, platform_id, launcher_id, media_format_id, acquire_date, purchase_price) 
+VALUES(hex(randomblob(5)), 'fallout-4-wasteland-workshop', 'steam', 'pc', 'steam', 'dig', '2024-04-10', 1.00);
+
+INSERT INTO game_transactions (game_tx_id, game_id, store_id, platform_id, launcher_id, media_format_id, acquire_date, purchase_price) 
+VALUES(hex(randomblob(5)), 'fallout-4-automatron', 'steam', 'pc', 'steam', 'dig', '2024-04-10', 1.10);
+
+
+
+
+SELECT g.game_id , g.game_title 
+FROM game_transactions gt
+INNER JOIN games g 
+ON gt.game_id= g.game_id 
+WHERE g.game_title LIKE '%el%'
+
+
+SELECT s.store_id, s.store_name, count(gt.game_tx_id) AS games_count , COALESCE ( sum(gt.purchase_price), 0) AS total
+FROM stores s 
+LEFT JOIN game_transactions gt ON s.store_id = gt.store_id 
+GROUP BY s.store_id 
+ORDER BY 3 DESC
+
+
+WITH min_price as
+(
+    SELECT min(purchase_price) AS value FROM game_transactions WHERE purchase_price > 0
+)
+SELECT 
+    count(*) AS total_games_count,
+    sum(gt.purchase_price) AS total_spent,
+    max(gt.purchase_price) AS max_price,
+    mp.value as min_price
+FROM game_transactions gt 
+CROSS JOIN min_price mp
+
+SELECT * FROM games mg
+INNER JOIN games dlc
+ON mg.game_id = dlc.main_game_id 
+
+WITH cte AS 
+(
+    SELECT dlc.*, 1 AS is_dlc, dlc.game_id || '@' || dlc.main_game_id AS game_tag
+    FROM games dlc WHERE dlc.main_game_id IS NOT NULL
+    UNION ALL 
+    SELECT g.*, 0 AS is_dlc,  g.game_id AS game_tag
+    FROM games g 
+    INNER JOIN cte dlc ON g.game_id = dlc.main_game_id
+
+)
+SELECT distinct cte.game_id, cte.game_title, cte.is_dlc FROM cte
+ORDER BY game_tag 
+
