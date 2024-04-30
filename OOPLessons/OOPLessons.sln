@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fiscal.WinForm", "Fiscal.Wi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{2104C014-1082-48FE-BB23-AF44D4E24CB5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbConsoleApp", "DbConsoleApp\DbConsoleApp.csproj", "{DA4826D5-E9DE-45DA-B3F5-9CC1F8547B59}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DbConsoleApp", "DbConsoleApp\DbConsoleApp.csproj", "{DA4826D5-E9DE-45DA-B3F5-9CC1F8547B59}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GamesDal", "GamesDal\GamesDal.csproj", "{D807942A-B2B1-4095-BEB6-30B63855B2DC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{DA4826D5-E9DE-45DA-B3F5-9CC1F8547B59}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA4826D5-E9DE-45DA-B3F5-9CC1F8547B59}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA4826D5-E9DE-45DA-B3F5-9CC1F8547B59}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D807942A-B2B1-4095-BEB6-30B63855B2DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D807942A-B2B1-4095-BEB6-30B63855B2DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D807942A-B2B1-4095-BEB6-30B63855B2DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D807942A-B2B1-4095-BEB6-30B63855B2DC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

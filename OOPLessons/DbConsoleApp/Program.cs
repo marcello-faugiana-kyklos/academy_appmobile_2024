@@ -1,10 +1,16 @@
-﻿using DbConsoleApp;
+﻿using GamesDal;
+using OOPClassLibrary.Games;
+using System.Data.Common;
+using System.Data.SQLite;
 
 string connStr = @"Data Source=./../../../../../databases/SQLite/academy_mobile_2024.db;Version=3;FailIfMissing=false;Foreign Keys=True";
 
-GamesDao dao = new GamesDao(connStr);
+//IGamesDao dao = new GamesDao(new SqliteGameConnectionFctory(connStr));
+IGamesDao dao = new SQLiteGamesDao(connStr);
 
-var games = await dao.GetAllGamesAsync();
+IGamesService gamesService = new GamesService(dao);
+
+var games = await gamesService.GetAllGamesAsync();
 
 Console.WriteLine($"gameId | gameTitle");
 games
@@ -21,10 +27,27 @@ games
     );
 
 
-var games2 =  await dao.GetAllGamesAsync_TO_AVOID();
-
-var games3 = await dao.GetAllGamesAsync_Better_but_TO_AVOID();
+var zeldaGames = await dao.GetGameDbItemsByPartialTitleAsync(id: "fallout", mainId: "fallout");
 
 
+var allStores = await dao.GetStoreDbItemsByCriteriaAsync();
 
 Console.ReadLine();
+
+//var games2 =  await dao.GetAllGamesAsync_TO_AVOID();
+
+//var games3 = await dao.GetAllGamesAsync_Better_but_TO_AVOID();
+
+class SqliteGameConnectionFctory : IGamesIDbConnectionFactory
+{
+    private readonly string _connectionString;
+
+    public SqliteGameConnectionFctory(string connectionString)
+    {
+        _connectionString = connectionString;
+    }
+
+    public DbConnection CreateConnection() =>
+        new SQLiteConnection( _connectionString );
+}
+

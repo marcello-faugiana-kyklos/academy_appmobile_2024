@@ -11,6 +11,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\GamesDal\GamesDal.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="Data\BelfioreCodes.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
