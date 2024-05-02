@@ -752,7 +752,8 @@ ORDER BY cl.Total DESC, c.CompanyName
 
 SELECT * FROM orders o 
 
-    
+SELECT * FROM games g 
+    WHERE g.main_game_id IS null
 
 WITH rnd AS
 (SELECT (abs(random()) % 100) AS n)
@@ -865,6 +866,11 @@ ORDER BY 1, 2
 
 
 
+SELECT * FROM stores s 
 
 
+select game_id, game_title, json_data, main_game_id 
+               from games
+               --where game_title like '%fa%'
+               ORDER BY 1
 

@@ -27,11 +27,6 @@ public class GamesDao : IGamesDao
         _stringConcatOperator = stringConcatOperator;
     }
 
-    //public GamesDao(IGamesIDbConnectionFactory gamesIDbConnectionFactory)
-    //{
-    //    _gamesIDbConnectionFactory = gamesIDbConnectionFactory;
-    //}
-
     public Task<GameDbItem[]> GetAllGameDbItemsAsync() =>
         GetGameDbItemsAsyncImpl
         (
@@ -238,41 +233,55 @@ public class GamesDao : IGamesDao
 
     private async Task<GameDbItem[]> GetGameDbItemsAsyncImpl(string sql, Action<DbCommand>? parametersAction)
     {
-        using DbConnection connection = _connectionFactory();
-        await connection.OpenAsync();
+        Func<DbDataReader, GameDbItem> mapping =
+            dataReader =>
+            {
+                string gameId = dataReader.GetString(0);
+                var gameTitle = (dataReader[dataReader.GetOrdinal("game_title")] as string)!;
+                var jsonData = dataReader[2] as string;
+                var mainGameId = dataReader[3] as string;
+                
+                return
+                    new GameDbItem
+                    {
+                        GameId = gameId,
+                        Title = gameTitle,
+                        JsonData = jsonData,
+                        MainGameId = mainGameId
+                    };
+            };
 
-        using DbCommand command = connection.CreateCommand();
-        command.CommandText = sql;
-        command.CommandType = CommandType.Text;
-
-        parametersAction?.Invoke(command);
-
-        using DbDataReader dataReader = await command.ExecuteReaderAsync();
-
-        List<GameDbItem> games = new List<GameDbItem>();
-
-        while (dataReader.Read())
-        {
-            string gameId = dataReader.GetString(0);
-            var gameTitle = (dataReader[dataReader.GetOrdinal("game_title")] as string)!;
-            var jsonData = dataReader[2] as string;
-            var mainGameId = dataReader[3] as string;
-            GameDbItem game =
-                new GameDbItem
-                {
-                    GameId = gameId,
-                    Title = gameTitle,
-                    JsonData = jsonData,
-                    MainGameId = mainGameId
-                };
-
-            games.Add(game);
-        }
-
-        return games.ToArray();
+        return await GetGenericDbItemsAsyncImpl(sql, parametersAction, mapping);
     }
 
     private async Task<StoreDbItem[]> GetStoreDbItemsAsyncImpl(string sql, Action<DbCommand>? parametersAction)
+    {
+        Func<DbDataReader, StoreDbItem> mapping =
+            dataReader =>
+            {
+                string storeId = dataReader.GetString(0);
+                var storeName = (dataReader[dataReader.GetOrdinal("store_name")] as string)!;
+                var storeUrl = dataReader[2] as string;
+
+                return
+                    new StoreDbItem
+                    {
+                        StoreId = storeId,
+                        StoreName = storeName,
+                        StoreUrl = storeUrl
+                    };
+            };
+
+        return await GetGenericDbItemsAsyncImpl(sql, parametersAction, mapping);
+    }
+
+
+    private async Task<T[]> GetGenericDbItemsAsyncImpl<T>
+    (
+        string sql, 
+        Action<DbCommand>? parametersAction,
+        Func<DbDataReader, T> mapping
+    )
     {
         using DbConnection connection = _connectionFactory();
         await connection.OpenAsync();
@@ -285,26 +294,14 @@ public class GamesDao : IGamesDao
 
         using DbDataReader dataReader = await command.ExecuteReaderAsync();
 
-        List<StoreDbItem> games = new List<StoreDbItem>();
+        List<T> dbItems = new List<T>();
 
         while (dataReader.Read())
         {
-            string storeId = dataReader.GetString(0);
-            var storeName = (dataReader[dataReader.GetOrdinal("store_name")] as string)!;
-            var storeUrl = dataReader[2] as string;
-
-            StoreDbItem game =
-                new StoreDbItem
-                {
-                    StoreId = storeId,
-                    StoreName = storeName,
-                    StoreUrl = storeUrl
-                };
-
-            games.Add(game);
+            T dbItem = mapping(dataReader);
+            dbItems.Add(dbItem);
         }
 
-        return games.ToArray();
+        return dbItems.ToArray();
     }
-
 }
