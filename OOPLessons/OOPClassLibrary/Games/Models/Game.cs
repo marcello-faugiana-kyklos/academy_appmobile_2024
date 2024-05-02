@@ -1,5 +1,5 @@
-﻿using OOPClassLibrary.Games.Exceptions;
-using OOPClassLibrary.Support;
+﻿using GamesDal.Support;
+using OOPClassLibrary.Games.Exceptions;
 using System.Diagnostics.CodeAnalysis;
 
 namespace OOPClassLibrary.Games.Models;

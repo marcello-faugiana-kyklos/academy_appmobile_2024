@@ -1,5 +1,4 @@
-﻿using OOPClassLibrary.Support;
-using System.Net.Http.Headers;
+﻿using GamesDal.Support;
 
 namespace OOPClassLibrary.Fiscal.TemplateMethod;
 

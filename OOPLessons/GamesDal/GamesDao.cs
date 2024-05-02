@@ -1,5 +1,6 @@
 ﻿using GamesDal.Criterias;
 using GamesDal.DbModels;
+using GamesDal.Support;
 using System.Data;
 using System.Data.Common;
 using System.Runtime.Intrinsics;
@@ -34,8 +35,11 @@ public class GamesDao : IGamesDao
             null
         );
 
+    private string BuildParamName(string paramName) =>
+        $" {_parameterPrefix}{paramName}";
+
     private string Likelize(string paramName) =>
-        $" like '%' {_stringConcatOperator} {_parameterPrefix}{paramName} {_stringConcatOperator} '%'";
+        $" like '%' {_stringConcatOperator} {BuildParamName(paramName)} {_stringConcatOperator} '%'";
 
 
     private static void AddParameterIfNecessary
@@ -57,8 +61,17 @@ public class GamesDao : IGamesDao
         }
     }
 
-    private string AddConditionIfNecessary(object? value, string fieldName, string paramName) =>
+    private string AddConditionForLikeIfNecessary(object? value, string fieldName, string paramName) =>
         value is null ? string.Empty : $" and {fieldName} {Likelize(paramName)}";
+
+    private string AddConditionForOperatorIfNecessary
+    (
+        object? value,
+        string @operator, 
+        string fieldName, 
+        string paramName
+    ) =>
+        value is null ? string.Empty : $" and {fieldName} {@operator} {BuildParamName(paramName)}";
 
     public async Task<GameDbItem[]> GetGameDbItemsByPartialTitleAsync
     (
@@ -72,10 +85,10 @@ public class GamesDao : IGamesDao
             @$"select game_id, game_title, json_data, main_game_id 
                from games where 1 = 1 ";
 
-        sql += AddConditionIfNecessary(id, "game_id", "p1");
-        sql += AddConditionIfNecessary(title, "game_title", "p2");
-        sql += AddConditionIfNecessary(json, "json_data", "p3");
-        sql += AddConditionIfNecessary(mainId, "main_game_id", "p4");
+        sql += AddConditionForLikeIfNecessary(id, "game_id", "p1");
+        sql += AddConditionForLikeIfNecessary(title, "game_title", "p2");
+        sql += AddConditionForLikeIfNecessary(json, "json_data", "p3");
+        sql += AddConditionForLikeIfNecessary(mainId, "main_game_id", "p4");
 
         Action<DbCommand>? parametersAction =
             command =>
@@ -98,9 +111,9 @@ public class GamesDao : IGamesDao
             @$"select store_id, store_name, store_url    
                from stores where 1 = 1 ";
 
-        sql += AddConditionIfNecessary(criteria?.StoreId, "store_id", "p1");
-        sql += AddConditionIfNecessary(criteria?.StoreName, "store_name", "p2");
-        sql += AddConditionIfNecessary(criteria?.StoreUrl, "store_url", "p3");
+        sql += AddConditionForLikeIfNecessary(criteria?.StoreId, "store_id", "p1");
+        sql += AddConditionForLikeIfNecessary(criteria?.StoreName, "store_name", "p2");
+        sql += AddConditionForLikeIfNecessary(criteria?.StoreUrl, "store_url", "p3");
 
         Action<DbCommand>? parametersAction =
             command =>
@@ -111,6 +124,90 @@ public class GamesDao : IGamesDao
             };
 
         return await GetStoreDbItemsAsyncImpl(sql, parametersAction);
+    }
+
+
+    public async Task<GameTransactionDbItem[]> GetTransactionDbItemsByCriteriaAsync
+    (
+        GameTransactionCriteria? criteria = null
+    )
+    {
+        string sql =
+            @$"
+SELECT
+    gt.game_tx_id,
+    g.game_id,
+    g.game_title,
+    g.main_game_id,
+    s.store_id,
+    s.store_name,
+    p.platform_id,
+    p.platform_name,
+    l.launcher_id,
+    l.launcher_name,
+    m.media_format_id,
+    m.media_format,
+    gt.acquire_date,
+    gt.purchase_price
+FROM
+    game_transactions gt
+INNER JOIN games g ON
+    gt.game_id = g.game_id
+INNER JOIN stores s ON
+    gt.store_id = s.store_id
+INNER JOIN platforms p ON
+    p.platform_id = gt.platform_id
+INNER JOIN launchers l ON
+    l.launcher_id = gt.launcher_id
+INNER JOIN media_formats m ON
+    m.media_format_id = gt.media_format_id
+WHERE 1 = 1 ";
+
+        sql += AddConditionForLikeIfNecessary(criteria?.GameTitle, "g.game_title", "p1");
+        sql += AddConditionForLikeIfNecessary(criteria?.StoreName, "s.store_name", "p2");
+        sql += AddConditionForLikeIfNecessary(criteria?.PlatformName, "p.platform_name", "p3");
+        sql += AddConditionForLikeIfNecessary(criteria?.LauncherName, "l.launcher_name", "p4");
+        sql += AddConditionForLikeIfNecessary(criteria?.MediaFormat, "m.media_format", "p5");
+        sql += AddConditionForOperatorIfNecessary(criteria?.AcquireDateFrom, ">=", "gt.acquire_date", "p6");
+        sql += AddConditionForOperatorIfNecessary(criteria?.AcquireDateTo, "<=", "gt.acquire_date", "p7");
+        sql += AddConditionForOperatorIfNecessary(criteria?.PurchasePriceFrom, ">=", "gt.purchase_price", "p8");
+        sql += AddConditionForOperatorIfNecessary(criteria?.PurchasePriceTo, "<=", "gt.purchase_price", "p9");
+
+        Action<DbCommand>? parametersAction =
+            command =>
+            {
+                AddParameterIfNecessary(command, "p1", criteria?.GameTitle);
+                AddParameterIfNecessary(command, "p2", criteria?.StoreName);
+                AddParameterIfNecessary(command, "p3", criteria?.PlatformName);
+                AddParameterIfNecessary(command, "p4", criteria?.LauncherName);
+                AddParameterIfNecessary(command, "p5", criteria?.MediaFormat);
+                AddParameterIfNecessary(command, "p6", criteria?.AcquireDateFrom.ToDateTime(), DbType.DateTime);
+                AddParameterIfNecessary(command, "p7", criteria?.AcquireDateTo.ToDateTime(), DbType.DateTime);
+                AddParameterIfNecessary(command, "p8", criteria?.PurchasePriceFrom, DbType.Decimal);
+                AddParameterIfNecessary(command, "p9", criteria?.PurchasePriceTo, DbType.Decimal);
+            };
+
+        Func<DbDataReader, GameTransactionDbItem> mapping =
+            dataReader =>
+                new GameTransactionDbItem
+                {
+                    TransactionId = dataReader.GetString(0),
+                    GameId = dataReader.GetString(1),
+                    GameTitle = dataReader.GetString(2),
+                    MainGameId = dataReader[3] as string,
+                    StoreId = dataReader.GetString(4),
+                    StoreName = dataReader.GetString(5),
+                    PlatformId = dataReader.GetString(6),
+                    PlatformName = dataReader.GetString(7),
+                    LauncherId = dataReader.GetString(8),
+                    LauncherName = dataReader.GetString(9),
+                    MediaFormatId = dataReader.GetString(10),
+                    MediaFormat = dataReader.GetString(11),
+                    AcquireDate = DateOnly.FromDateTime(dataReader.GetDateTime(12)),
+                    PurchasePrice = dataReader.GetDecimal(13)
+                };
+
+        return await GetGenericDbItemsAsyncImpl(sql, parametersAction, mapping);
     }
 
     #region roba da evitare

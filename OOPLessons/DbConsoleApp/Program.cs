@@ -1,4 +1,5 @@
 ﻿using GamesDal;
+using GamesDal.Criterias;
 using OOPClassLibrary.Games;
 using System.Data.Common;
 using System.Data.SQLite;
@@ -9,6 +10,18 @@ string connStr = @"Data Source=./../../../../../databases/SQLite/academy_mobile_
 IGamesDao dao = new SQLiteGamesDao(connStr);
 
 IGamesService gamesService = new GamesService(dao);
+
+var tx = await
+        dao
+        .GetTransactionDbItemsByCriteriaAsync
+        (
+            new GameTransactionCriteria
+            {
+               AcquireDateFrom = new DateOnly(2024, 3, 1)
+            }
+        );
+
+
 
 var games = await gamesService.GetAllGamesAsync();
 

@@ -1,4 +1,4 @@
-﻿using OOPClassLibrary.Support;
+﻿using GamesDal.Support;
 using System.Text;
 
 namespace OOPClassLibrary.Fiscal.MethodSwitch;

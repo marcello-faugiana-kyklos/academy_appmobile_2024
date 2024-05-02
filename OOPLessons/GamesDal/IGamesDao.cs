@@ -20,4 +20,9 @@ public interface IGamesDao
     (
         StoreCriteria? criteria = null
     );
+
+    Task<GameTransactionDbItem[]> GetTransactionDbItemsByCriteriaAsync
+    (
+        GameTransactionCriteria? criteria = null
+    );
 }

@@ -1,4 +1,4 @@
-﻿using OOPClassLibrary.Support;
+﻿using GamesDal.Support;
 using System.Reflection;
 
 namespace OOPClassLibrary.Games.Models;

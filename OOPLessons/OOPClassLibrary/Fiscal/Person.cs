@@ -1,8 +1,4 @@
-﻿using OOPClassLibrary.Support;
-using System.Linq;
-using System.Reflection;
-
-namespace OOPClassLibrary.Fiscal;
+﻿namespace OOPClassLibrary.Fiscal;
 
 public class Person
 {

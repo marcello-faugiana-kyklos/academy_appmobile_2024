@@ -1,4 +1,4 @@
-﻿namespace OOPClassLibrary.Support;
+﻿namespace GamesDal.Support;
 
 public static class ExtensionMethods
 {
@@ -57,4 +57,7 @@ public static class ExtensionMethods
 
     public static DateOnly ToDateOnly(this DateTime date) =>
         new DateOnly(date.Year, date.Month, date.Day);
+
+    public static DateTime? ToDateTime(this DateOnly? date) =>
+        date is null ? new DateTime?() : date.Value.ToDateTime(TimeOnly.MinValue);
 }
