@@ -203,7 +203,7 @@ WHERE 1 = 1 ";
                     LauncherName = dataReader.GetString(9),
                     MediaFormatId = dataReader.GetString(10),
                     MediaFormat = dataReader.GetString(11),
-                    AcquireDate = DateOnly.FromDateTime(dataReader.GetDateTime(12)),
+                    AcquireDate = dataReader.GetDateTime(12).ToDateOnly(),
                     PurchasePrice = dataReader.GetDecimal(13)
                 };
 

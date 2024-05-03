@@ -17,7 +17,10 @@ var tx = await
         (
             new GameTransactionCriteria
             {
-               AcquireDateFrom = new DateOnly(2024, 3, 1)
+               AcquireDateFrom = new DateOnly(2024, 3, 1),
+               PurchasePriceFrom = 1.1m,
+               PurchasePriceTo = 10m,
+               GameTitle = "mat"
             }
         );
 

@@ -874,3 +874,36 @@ select game_id, game_title, json_data, main_game_id
                --where game_title like '%fa%'
                ORDER BY 1
 
+
+               
+SELECT
+    gt.game_tx_id,
+    g.game_id,
+    g.game_title,
+    g.main_game_id,
+    s.store_id,
+    s.store_name,
+    p.platform_id,
+    p.platform_name,
+    l.launcher_id,
+    l.launcher_name,
+    m.media_format_id,
+    m.media_format,
+    gt.acquire_date,
+    gt.purchase_price
+FROM
+    game_transactions gt
+INNER JOIN games g ON
+    gt.game_id = g.game_id
+INNER JOIN stores s ON
+    gt.store_id = s.store_id
+INNER JOIN platforms p ON
+    p.platform_id = gt.platform_id
+INNER JOIN launchers l ON
+    l.launcher_id = gt.launcher_id
+INNER JOIN media_formats m ON
+    m.media_format_id = gt.media_format_id
+ORDER BY
+gt.acquire_date 
+               
+               
