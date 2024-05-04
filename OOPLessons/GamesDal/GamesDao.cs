@@ -1,9 +1,8 @@
 ﻿using GamesDal.Criterias;
 using GamesDal.DbModels;
-using GamesDal.Support;
+using OOP.Common;
 using System.Data;
 using System.Data.Common;
-using System.Runtime.Intrinsics;
 
 namespace GamesDal;
 

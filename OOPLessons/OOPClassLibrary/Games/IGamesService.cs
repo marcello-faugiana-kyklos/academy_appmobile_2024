@@ -1,9 +1,10 @@
-﻿using OOPClassLibrary.Games.Models;
+﻿using OOPClassLibrary.Games.Dtos;
+using OOPClassLibrary.Games.Models;
 
-namespace OOPClassLibrary.Games
+namespace OOPClassLibrary.Games;
+
+public interface IGamesService
 {
-    public interface IGamesService
-    {
-        Task<List<Game>> GetAllGamesAsync();
-    }
+    Task<Game[]> GetAllGamesAsync();
+    ValueTask<GameTransactionDto[]> GetGameTransactionDtosAsync(string? gameTitle = null);
 }

@@ -1,4 +1,4 @@
-﻿using GamesDal.Support;
+﻿using OOP.Common;
 using System.Text;
 
 namespace OOPClassLibrary.Fiscal.IFaceMethod;

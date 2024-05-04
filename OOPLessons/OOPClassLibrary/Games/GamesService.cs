@@ -1,5 +1,7 @@
 ﻿using GamesDal;
+using GamesDal.Criterias;
 using GamesDal.DbModels;
+using OOPClassLibrary.Games.Dtos;
 using OOPClassLibrary.Games.Models;
 
 namespace OOPClassLibrary.Games;
@@ -13,10 +15,64 @@ public class GamesService : IGamesService
         _gamesDao = gamesDao;
     }
 
-    public async Task<List<Game>> GetAllGamesAsync()
+    public async Task<Game[]> GetAllGamesAsync()
     {
         var dbItems = await _gamesDao.GetAllGameDbItemsAsync();
-        return BuildGamesFromDbItems(dbItems);
+        return BuildGamesFromDbItems(dbItems).ToArray();
+    }
+
+
+    public async ValueTask<GameTransactionDto[]> GetGameTransactionDtosAsync(string? gameTitle = null)
+    {
+        var txDbItems = await
+            _gamesDao
+            .GetTransactionDbItemsByCriteriaAsync
+            (
+                new GameTransactionCriteria
+                {
+                    GameTitle = gameTitle
+                }
+            );
+
+        return
+            txDbItems
+            .Select
+            (
+                x =>
+                    new GameTransactionDto
+                    {
+                        TransactionId = x.TransactionId,
+                        AcquireDate = x.AcquireDate,
+                        MediaFormat = x.MediaFormat,
+                        PurchasePrice = x.PurchasePrice,
+                        Game =
+                            new GameDto
+                            {
+                                GameId = x.GameId,
+                                GameTitle = x.GameTitle,
+                                MainGameId = x.MainGameId
+                            },
+                        Launcher =
+                            new LauncherDto
+                            {
+                                LauncherId = x.LauncherId,
+                                LauncherName = x.LauncherName
+                            },
+                        Platform = 
+                            new PlatformDto
+                            {
+                                PlatformId = x.PlatformId,
+                                PlatformName = x.PlatformName
+                            },
+                        Store =
+                            new StoreDto
+                            {
+                                StoreId = x.StoreId,
+                                StoreName  = x.StoreName
+                            }
+                    }
+            )
+            .ToArray();
     }
 
     private List<Game> BuildGamesFromDbItems(IEnumerable<GameDbItem> gamesDbItems)

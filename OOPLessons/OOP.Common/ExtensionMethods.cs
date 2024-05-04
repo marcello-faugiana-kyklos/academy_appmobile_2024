@@ -1,4 +1,4 @@
-﻿namespace GamesDal.Support;
+﻿namespace OOP.Common;
 
 public static class ExtensionMethods
 {
@@ -23,9 +23,9 @@ public static class ExtensionMethods
     )
     {
         string[] values = await File.ReadAllLinesAsync(path, cancellationToken);
-        
+
         cancellationToken.ThrowIfCancellationRequested();
-        
+
         return
             values
             .Select(x => x.SplitLineIntoPlaceAndCode('|'))
@@ -35,8 +35,8 @@ public static class ExtensionMethods
     public static void AssertArgumentNotNull(this object item, string paramName) =>
         ArgumentNullException.ThrowIfNull(item, paramName);
 
-    public static T GetNonNullOrThrow<T>(this T item, string paramName) 
-        where T : class 
+    public static T GetNonNullOrThrow<T>(this T item, string paramName)
+        where T : class
     {
         ArgumentNullException.ThrowIfNull(item, paramName);
         return item;
@@ -55,9 +55,13 @@ public static class ExtensionMethods
     public static bool IsNullOrEmpty(this string? s) =>
         string.IsNullOrEmpty(s);
 
+    public static bool HasText(this string? s) =>
+        (s?.Length ?? 0) > 0;
+
     public static DateOnly ToDateOnly(this DateTime date) =>
         new DateOnly(date.Year, date.Month, date.Day);
 
     public static DateTime? ToDateTime(this DateOnly? date) =>
         date is null ? new DateTime?() : date.Value.ToDateTime(TimeOnly.MinValue);
 }
+
