@@ -42,6 +42,23 @@ public static class ExtensionMethods
         return item;
     }
 
+    public static T GetValueOrThrow<T>
+    (
+        this T? item, 
+        Func<string> errorMessage,
+        Func<T?, bool>? errorCheckFx = null
+    )
+    {
+        //errorCheckFx ??= x => x is null;
+        errorCheckFx ??= _ => false;
+
+        if (item is null || errorCheckFx(item))
+        {
+            throw new Exception(errorMessage());
+        }
+        return item;
+    }
+
     public static string GetWithTextOrThrow(this string s, string paramName)
     {
         if (string.IsNullOrWhiteSpace(s))
@@ -56,12 +73,19 @@ public static class ExtensionMethods
         string.IsNullOrEmpty(s);
 
     public static bool HasText(this string? s) =>
-        (s?.Length ?? 0) > 0;
+        (s?.Trim().Length ?? 0) > 0;
 
     public static DateOnly ToDateOnly(this DateTime date) =>
         new DateOnly(date.Year, date.Month, date.Day);
 
     public static DateTime? ToDateTime(this DateOnly? date) =>
         date is null ? new DateTime?() : date.Value.ToDateTime(TimeOnly.MinValue);
+
+    public static bool EqualsIgnoreCase(this string s1, string s2) =>
+        string.Equals(s1, s2, StringComparison.InvariantCultureIgnoreCase);
+
+    public static R Apply<T, R>(this T item, Func<T, R> mapper) =>
+        mapper(item);
+
 }
 

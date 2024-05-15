@@ -112,7 +112,7 @@
             // btnCreatePerson
             // 
             btnCreatePerson.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnCreatePerson.Location = new Point(658, 581);
+            btnCreatePerson.Location = new Point(611, 581);
             btnCreatePerson.Name = "btnCreatePerson";
             btnCreatePerson.Size = new Size(94, 59);
             btnCreatePerson.TabIndex = 8;
@@ -176,7 +176,7 @@
             btnBuildFiscalCode.UseVisualStyleBackColor = true;
             btnBuildFiscalCode.Click += btnBuildFiscalCode_Click;
             // 
-            // Form1
+            // FiscalCodeForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -196,7 +196,7 @@
             Controls.Add(lblLastName);
             Controls.Add(txtFirstName);
             Controls.Add(lblFirstNAme);
-            Name = "Form1";
+            Name = "FiscalCodeForm";
             Text = "Person Form";
             ResumeLayout(false);
             PerformLayout();
